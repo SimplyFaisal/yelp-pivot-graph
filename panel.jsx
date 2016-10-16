@@ -24,6 +24,9 @@ function reducer(state, action) {
     case ActionType.SET_LOCATIONS:
       return Object.assign({}, state, {LOCATIONS: action.locations});
       break;
+      case ActionType.SET_GRAPH:
+        return Object.assign({}, state, {GRAPH: action.graph});
+        break;
     default:
       break
   }
@@ -56,6 +59,7 @@ class Panel extends React.Component {
     this.onYChange = this.onYChange.bind(this);
     this.onLocationChange = this.onLocationChange.bind(this);
     this.getLocations = this.getLocations.bind(this);
+    this.onGraphButtonClick = this.onGraphButtonClick.bind(this);
   }
 
   render () {
@@ -82,6 +86,12 @@ class Panel extends React.Component {
               options={AttributeType.enumValues}
               onChange={this.onYChange}
           />
+
+          <a
+            className="btn btn-default btn-lg btn-block"
+            onClick={this.onGraphButtonClick}>
+            Graph!
+          </a>
         </div>
       </div>
     )
@@ -102,6 +112,19 @@ class Panel extends React.Component {
     store.dispatch({type: ActionType.SET_LOCATIONS, locations: values})
   }
 
+  onGraphButtonClick(event) {
+    event.preventDefault();
+    var state = store.getState();
+    var locations = state['LOCATIONS'].map(x => x.value).join(',');
+    axios.get('/api/graph', {params: {locations: locations}})
+        .then((response) => {
+      store.dispatch({type: ActionType.SET_GRAPH, graph: response.data});
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
   getLocations(input) {
     return axios.get('/api/locations').then((response) => {
       var locations = response.data.map((location) => {
@@ -111,7 +134,7 @@ class Panel extends React.Component {
       return {options: locations};
     })
     .catch((error) => {
-      console.log(error);
+      console.error(error);
     });
   }
 };
