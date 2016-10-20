@@ -21,8 +21,9 @@ api.get('/locations', (request, response) => {
 
 api.get('/graph', (request, response) => {
   var locations = request.query.locations.split(',');
-  Business.find({'city': {$in: locations}}).then((businesses) => {
-    graph.createGraph(Review, businesses).then((G) => {
+  var query = {city: {$in: locations}, categories: 'Restaurants'};
+  Business.find(query).then((businesses) => {
+    graph.createGraph(businesses).then((G) => {
       response.json(G);
     })
     .catch((error) => {
