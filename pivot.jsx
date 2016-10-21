@@ -54,13 +54,16 @@ class GraphRoller {
 
 class PivotGraph extends React.Component {
 
-  super(props) {
+  constructor(props) {
+    super(props);
     this.svg = null;
+    this.height = 300;
+    this.width = 400;
   }
   render = () => {
     return (
       <div> Pivot Graph
-        <svg id="pivot-graph"></svg>
+        <svg id="pivot-graph" height={this.height} width={this.width}></svg>
       </div>
     )
   }
