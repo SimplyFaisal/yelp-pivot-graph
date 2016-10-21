@@ -12,6 +12,7 @@
     "axios": "^0.15.1",
     "babel-plugin-transform-class-properties": "^6.16.0",
     "bluebird": "^3.4.6",
+    "d3": "^4.2.8",
     "enumify": "^1.0.4",
     "express": "^4.14.0",
     "graphlib": "^2.1.1",

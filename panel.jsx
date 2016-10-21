@@ -1,49 +1,13 @@
 const React = require('react');
 const Select = require('react-select');
-const enumify = require('enumify');
-const redux = require('redux');
 const axios = require('axios');
 
-class AttributeType extends enumify.Enum {}
-class ActionType extends enumify.Enum {}
+const state = require('./state');
+const constants = require('./constants');
 
-ActionType.initEnum({
-  SET_YAXIS_ATTRIBUTE: {},
-  SET_XAXIS_ATTRIBUTE: {},
-  SET_LOCATIONS: {}
-});
-
-function reducer(state, action) {
-  switch(action.type) {
-    case ActionType.SET_XAXIS_ATTRIBUTE:
-      return Object.assign({}, state, {YAXIS_ATTRIBUTE: action.attribute});
-      break;
-    case ActionType.SET_YAXIS_ATTRIBUTE:
-      return Object.assign({}, state, {XAXIS_ATTRIBUTE: action.attribute});
-      break;
-    case ActionType.SET_LOCATIONS:
-      return Object.assign({}, state, {LOCATIONS: action.locations});
-      break;
-      case ActionType.SET_GRAPH:
-        return Object.assign({}, state, {GRAPH: action.graph});
-        break;
-    default:
-      break
-  }
-}
-
-var initialState = {};
-var store = redux.createStore(reducer, {});
-
-AttributeType.initEnum({
-  STARS: {label: 'Stars', value: 'STARS'},
-  CATEGORIES: {label: 'Categories', value: 'CATEGORIES'},
-  REVIEW_COUNT: {label: 'Review Count', value: 'REVIEW_COUNT'},
-  ATTIRE: {label: 'Attire', value: 'ATTIRE'},
-  PRICE_RANGE: {label: 'Price Range', value: 'PRICE_RANGE'},
-  DELIVERY: {label: 'Delivery', value: 'DELIVERY'}
-});
-
+var Store = state.Store;
+var AttributeType = constants.AttributeType;
+var ActionType = constants.ActionType;
 
 class Panel extends React.Component {
   state = {
@@ -99,26 +63,26 @@ class Panel extends React.Component {
 
   onXChange(value) {
     this.setState({xAttribute: value});
-    store.dispatch({type: ActionType.SET_XAXIS_ATTRIBUTE, attribute: value});
+    Store.dispatch({type: ActionType.SET_XAXIS_ATTRIBUTE, attribute: value});
   }
 
   onYChange(value) {
     this.setState({yAttribute: value});
-    store.dispatch({type: ActionType.SET_YAXIS_ATTRIBUTE, attribute: value})
+    Store.dispatch({type: ActionType.SET_YAXIS_ATTRIBUTE, attribute: value})
   }
 
   onLocationChange(values) {
     this.setState({locations: values});
-    store.dispatch({type: ActionType.SET_LOCATIONS, locations: values})
+    Store.dispatch({type: ActionType.SET_LOCATIONS, locations: values})
   }
 
   onGraphButtonClick(event) {
     event.preventDefault();
-    var state = store.getState();
+    var state = Store.getState();
     var locations = state['LOCATIONS'].map(x => x.value).join(',');
     axios.get('/api/graph', {params: {locations: locations}})
         .then((response) => {
-      store.dispatch({type: ActionType.SET_GRAPH, graph: response.data});
+      Store.dispatch({type: ActionType.SET_GRAPH, graph: response.data});
     })
     .catch((error) => {
       console.error(error);
