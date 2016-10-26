@@ -1,7 +1,9 @@
 const React = require('react');
 import * as d3 from "d3";
 const Rollup = require('./rollup.js');
+const constants = require('./constants.js');
 
+const DataType = constants.DataType;
 const Store = require('./state').Store;
 
 class PivotGraph extends React.Component {
@@ -11,7 +13,7 @@ class PivotGraph extends React.Component {
     this.svg = null;
     this.margin = {top: 50, right: 50, bottom: 50, left: 50};
     this.width = 700 - this.margin.left - this.margin.right,
-    this.height = 500 - this.margin.top - this.margin.bottom;
+    this.height = 700 - this.margin.top - this.margin.bottom;
   }
   render = () => {
     return (
@@ -33,14 +35,21 @@ class PivotGraph extends React.Component {
       if (!xAttribute || !yAttribute) {
         return;
       }
-      var fx = xAttribute.f;
-      var xScale = xAttribute.scale()
-        .domain(d3.extent(G.nodes, fx))
-        .range([this.margin.left, this.width]);
 
+      var fx = xAttribute.f;
       var fy = yAttribute.f;
+
+      var filteredNodes = G.nodes.filter(x => fx(x) != undefined && fy(x) != undefined);
+      var filteredNodeIds = d3.set(filteredNodeIds, x => x.v);
+      G.nodes = G.nodes.filter(x => !filteredNodeIds.has(x.v));
+      G.edges = G.edges.filter(e => !filteredNodeIds.has(e.w) || !filteredNodeIds.has(e.v));
+
+      var xScale = xAttribute.scale()
+        .domain(xAttribute.domain(G.nodes))
+        .range([this.margin.left, this.width])
+
       var yScale = yAttribute.scale()
-        .domain(d3.extent(G.nodes, fy))
+        .domain(yAttribute.domain(G.nodes))
         .range([this.margin.top, this.height - this.margin.top]);
 
       var xAxis = d3.axisBottom()
@@ -49,20 +58,28 @@ class PivotGraph extends React.Component {
       var yAxis = d3.axisLeft()
         .scale(yScale)
 
-      var linkMap = {};
-      G.nodes.forEach((x, i) => {
-        linkMap[x.id] = i;
+      var map = d3.map(d3.range(G.nodes.length), i => G.nodes[i].v);
+      G.nodes.forEach((x) => {
+        x.index = map.get(x.v);
       });
-      var getNode = x => linkMap[x.id];
+
       var rollup = Rollup.rollup()
         .links(g => g.edges)
         .directed(false)
-        .linkSource(getNode)
-        .linkTarget(getNode)
+        .linkSource(e => map.get(e.w))
+        .linkTarget(e => map.get(e.v))
         .x(d => xScale(fx(d)))
         .y(d => yScale(fy(d)));
 
       G = rollup(G);
+
+      var radiusScale = d3.scaleLinear()
+          .domain(d3.extent(G.nodes, x => x.nodes.length))
+          .range([5, 20]);
+
+      var edgeWeightScale = d3.scaleLinear()
+          .domain(d3.extent(G.links, x => x.value))
+          .range([1, 10]);
 
       var svg = d3.select('#pivot-graph')
         .attr("width", this.width + this.margin.left + this.margin.right)
@@ -81,15 +98,15 @@ class PivotGraph extends React.Component {
               dr = 2 * Math.sqrt(dx * dx + dy * dy);
           return "M" + sx + "," + sy + "A" + dr + "," + dr + " 0 0,1 " + tx + "," + ty;
         })
-        .style("stroke-width", function(d) { return 10; });
+        .style("stroke-width", d => edgeWeightScale(d.value));
 
       svg.selectAll(".node")
           .data(G.nodes)
         .enter().append("circle")
           .attr("class", "node")
-          .attr("r", function(d) { return Math.sqrt(d.nodes.length * 40); })
-          .attr("cx", function(d) { return d.x; })
-          .attr("cy", function(d) { return d.y; });
+          .attr("r", (d) => radiusScale(d.nodes.length))
+          .attr("cx", (d) => d.x)
+          .attr("cy", (d) => d.y);
 
       svg.append("g")
           .attr("class", "x axis")
