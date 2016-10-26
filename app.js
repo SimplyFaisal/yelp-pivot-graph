@@ -31,6 +31,8 @@ class Map extends React.Component {
     }
   }
 }
+
+
 class App extends React.Component {
 
   state = {
@@ -44,7 +46,7 @@ class App extends React.Component {
           isOpen={this.state.isModalOpen}
           onRequestClose={this.closeModal}
         >
-        
+
         <Map/>
         </Modal>
         <div className="col-md-4">

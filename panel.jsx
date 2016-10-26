@@ -84,9 +84,9 @@ class Panel extends React.Component {
         .then((response) => {
       Store.dispatch({type: ActionType.SET_GRAPH, graph: response.data});
     })
-    .catch((error) => {
-      console.error(error);
-    });
+    // .catch((error) => {
+    //   console.error(error);
+    // });
   }
 
   getLocations(input) {

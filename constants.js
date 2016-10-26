@@ -8,10 +8,10 @@ AttributeType.initEnum({
     label: 'Stars',
     value: 'STARS',
     scale: () => {
-      return;
+      return d3.scaleLinear();
     },
     f: (d) => {
-      return d;
+      return d.value.stars;
     }
   },
   CATEGORIES: {
@@ -28,30 +28,30 @@ AttributeType.initEnum({
     label: 'Review Count',
     value: 'REVIEW_COUNT',
     scale: () => {
-      return;
+      return d3.scaleLinear();
     },
     f: (d) => {
-      return d;
+      return d.value.review_count;
     }
   },
   ATTIRE: {
     label: 'Attire',
     value: 'ATTIRE',
     scale: () => {
-      return;
+      return d3.scaleOrdinal();
     },
     f: (d) => {
-      return d;
+      return d.value.attributes.Attire || 'unknown';
     }
   },
   PRICE_RANGE: {
     label: 'Price Range',
     value: 'PRICE_RANGE',
     scale: () => {
-      return;
+      return d3.scaleLinear();
     },
     f: (d) => {
-      return d;
+      return d.value.attributes['Price Range'] || 'unknown';
     }
   },
   DELIVERY: {
@@ -61,7 +61,7 @@ AttributeType.initEnum({
       return;
     },
     f: (d) => {
-      return d;
+      return d.value.attributes.Delivery || 'unknown';
     }
   }
 });
