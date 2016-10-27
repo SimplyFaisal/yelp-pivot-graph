@@ -40,9 +40,13 @@ AttributeType.initEnum({
   REVIEW_COUNT: {
     label: 'Review Count',
     value: 'REVIEW_COUNT',
-    domain: (data) => data,
+    domain: (data) =>  {
+      data.sort(d3.ascending);
+      return d3.range(0, 100, 10)
+        .map(i => d3.quantile(data, i, x => x.value.review_count));
+    },
     scale: () => {
-      return d3.scaleLinear();
+      return d3.scaleQuantile();
     },
     f: (d) => {
       return d.value.review_count;
