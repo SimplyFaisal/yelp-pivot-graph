@@ -1,0 +1,44 @@
+#pivot-graph-container {
+  height: 400px;
+  width: 600px;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+}
+/* Optional: Makes the sample page fill the window. */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding-top: 10px;
+}
+
+.link {
+  fill: none;
+  stroke: #000;
+  stroke-opacity: .25;
+}
+
+.axis path,
+.axis line {
+  display: none;
+}
+
+.panel-title {
+  display:inline-block;
+}
+
+.panel-heading button {
+  display: inline-block;
+  float: right
+}
+
+.glyphicon-map-marker {
+  display: inline-block;
+  float: right;
+}
+
+.Select {
+  margin: 10px 0px 10px 0px;
+}

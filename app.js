@@ -44,24 +44,29 @@ class App extends React.Component {
       <div className="container-fluid">
         <Modal
           isOpen={this.state.isModalOpen}
-          onRequestClose={this.closeModal}
-        >
+          onRequestClose={this.closeModal}>
 
-        <Map/>
+          <Map/>
         </Modal>
-        <div className="col-md-4">
+        <div className="col-md-3">
           <div id="panel-container">
-            <a
-              href="#"
-              className="btn btn-default btn-lg btn-block"
-              onClick={this.openModal}>
-              Show Map
-            </a>
-
-            <Panel/>
+            <div className="panel panel-primary">
+              <div className="panel-heading">
+                <h3 className="panel-title">Yelp Pivot</h3>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-default"
+                  onClick={this.openModal}>
+                  <span className="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+                </button>
+              </div>
+              <div className="panel-body">
+                <Panel/>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="col-md-8">
+        <div className="col-md-9">
           <div id="pivot-graph-container">
             <PivotGraph/>
           </div>
