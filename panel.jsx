@@ -38,12 +38,16 @@ class Panel extends React.Component {
             loadOptions={this.getLocations}
             onChange={this.onLocationChange}
           />
+
+          <h5> x axis</h5>
           <Select
             name="x-axis"
             value={this.state.xAttribute}
             options={AttributeType.enumValues}
             onChange={this.onXChange}
           />
+
+          <h5> y axis</h5>
           <Select
               name="y-axis"
               value={this.state.yAttribute}
@@ -52,7 +56,7 @@ class Panel extends React.Component {
           />
 
           <a
-            className="btn btn-default btn-lg btn-block"
+            className="btn btn-danger btn-lg btn-block"
             onClick={this.onGraphButtonClick}>
             Graph!
           </a>

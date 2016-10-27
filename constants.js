@@ -87,6 +87,18 @@ AttributeType.initEnum({
     f: (d) => {
       return d.value.attributes.Delivery ? 'yes' : 'no';
     }
+  },
+  NOISE_LEVEL: {
+    label: 'Noise Level',
+    value: 'NOISE_LEVEL',
+    type: DataType.ORDINAL,
+    domain: (data) => [ "average", "loud", "quiet", "very_loud" , 'unknown'],
+    scale: () => {
+      return d3.scalePoint();
+    },
+    f: (d) => {
+      return d.value.attributes['Noise Level'] || 'unknown';
+    }
   }
 });
 

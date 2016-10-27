@@ -50,7 +50,7 @@ class App extends React.Component {
         </Modal>
         <div className="col-md-3">
           <div id="panel-container">
-            <div className="panel panel-primary">
+            <div className="panel panel-danger">
               <div className="panel-heading">
                 <h3 className="panel-title">Yelp Pivot</h3>
                 <button
