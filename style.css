@@ -7,6 +7,7 @@
   height: 100%;
   width: 100%;
 }
+
 /* Optional: Makes the sample page fill the window. */
 html, body {
   height: 100%;
@@ -14,11 +15,6 @@ html, body {
   padding-top: 10px;
 }
 
-.link {
-  fill: none;
-  stroke: #000;
-  stroke-opacity: .25;
-}
 
 .axis path,
 .axis line {
@@ -41,4 +37,23 @@ html, body {
 
 .Select {
   margin: 10px 0px 10px 0px;
+}
+
+.node {
+  fill: #ff4136;
+}
+
+.node:hover {
+  fill: #2196f3;
+}
+
+.link {
+  fill: none;
+  stroke: #000;
+  opacity: 0.25;
+}
+
+.link:hover {
+  stroke: #2196f3;
+  opacity: 0.8;
 }

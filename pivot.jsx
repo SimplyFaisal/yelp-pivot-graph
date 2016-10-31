@@ -2,6 +2,7 @@ const React = require('react');
 import * as d3 from "d3";
 const Rollup = require('./rollup.js');
 const constants = require('./constants.js');
+const tip = require('d3-tip');
 
 const DataType = constants.DataType;
 const Store = require('./state').Store;
