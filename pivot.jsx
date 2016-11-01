@@ -88,6 +88,22 @@ class PivotGraph extends React.Component {
         .append("g")
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
+        // Initializing tooltip anchor
+        var tooltipAnchorSelection = svg.append("circle")
+        tooltipAnchorSelection.attr({
+          r: 3,
+          opacity: 0
+        });
+
+        var tooltipAnchor = $(tooltipAnchorSelection.node());
+        tooltipAnchor.tooltip({
+          animation: false,
+          container: "body",
+          placement: "auto",
+          title: "text",
+          trigger: "manual"
+        });
+
       svg.selectAll(".link")
         .data(G.links)
       .enter().append("path")
@@ -99,7 +115,19 @@ class PivotGraph extends React.Component {
               dr = 2 * Math.sqrt(dx * dx + dy * dy);
           return "M" + sx + "," + sy + "A" + dr + "," + dr + " 0 0,1 " + tx + "," + ty;
         })
-        .style("stroke-width", d => edgeWeightScale(d.value));
+        .style("stroke-width", d => edgeWeightScale(d.value))
+        .on('mouseover', function(d) {
+          var coords = d3.mouse(this);
+          tooltipAnchor.attr({
+            cx: coords[0],
+            cy: coords[1],
+            "data-original-title": 'Edge content goes here'
+          });
+          tooltipAnchor.tooltip("show");
+        })
+        .on('mouseout', function(d) {
+          tooltipAnchor.tooltip('hide');
+        });
 
       svg.selectAll(".node")
           .data(G.nodes)
@@ -107,7 +135,18 @@ class PivotGraph extends React.Component {
           .attr("class", "node")
           .attr("r", (d) => radiusScale(d.nodes.length))
           .attr("cx", (d) => d.x)
-          .attr("cy", (d) => d.y);
+          .attr("cy", (d) => d.y)
+          .on('mouseover',function(d) {
+            tooltipAnchor.attr({
+              cx: d.x,
+              cy: d.y,
+              "data-original-title": 'Node content goes here'
+            });
+            tooltipAnchor.tooltip("show");
+          })
+          .on('mouseout', function(d) {
+            tooltipAnchor.tooltip('hide');
+          });
 
       svg.append("g")
           .attr("class", "x axis")

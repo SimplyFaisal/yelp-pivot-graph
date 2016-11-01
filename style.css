@@ -62,3 +62,7 @@ html, body {
 #map-overlay {
   margin: 10px;
 }
+
+.tooltip {
+  pointer-events: none;
+}
