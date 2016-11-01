@@ -54,6 +54,11 @@ html, body {
 }
 
 .link:hover {
-  stroke: #2196f3;
+  stroke: #28b62c;
   opacity: 0.8;
+}
+
+
+#map-overlay {
+  margin: 10px;
 }

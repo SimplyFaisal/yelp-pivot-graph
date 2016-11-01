@@ -23,13 +23,38 @@ class Map extends React.Component {
   componentDidMount = () => {
     if (!this.map) {
       var options =  {
-        center: {lat: -34.397, lng: 150.644},
-        zoom: 8
+        center: {lat: 0, lng: 0},
+        zoom: 3
       };
       this.map = new google.maps.Map(document.getElementById('map'), options);
       google.maps.event.trigger(this.map, "resize");
+      var legend = document.createElement('div');
+      ReactDom.render(<MapOverlayComponent/>, legend);
+      this.map.controls[google.maps.ControlPosition.LEFT_CENTER].push(legend);
     }
   }
+}
+
+class MapOverlayComponent extends React.Component {
+   constructor(props) {
+     super(props);
+   }
+
+   render = () => {
+     return (
+       <div id="map-overlay">
+         <div className="panel panel-default">
+            <div className="panel-body">
+              Basic panel
+            </div>
+        </div>
+      </div>
+     );
+   }
+
+   componentDidMount = () => {
+     console.log('component did mount');
+   }
 }
 
 

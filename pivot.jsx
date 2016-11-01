@@ -118,10 +118,6 @@ class PivotGraph extends React.Component {
           .call(yAxis);
     });
   }
-
-  drawPivotGraph = (G) => {
-
-  }
 }
 
 module.exports = PivotGraph;
