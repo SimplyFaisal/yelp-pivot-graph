@@ -2,6 +2,7 @@ var React = require('react');
 var ReactDom = require('react-dom');
 var Modal = require('react-modal');
 var redux = require('redux');
+var axios = require('axios');
 
 var Store = require('./state').Store;
 var Panel = require('./panel.jsx');
@@ -11,6 +12,7 @@ class Map extends React.Component {
   constructor(props){
     super(props);
     this.map = null;
+    this.heatmap = new google.maps.visualization.HeatmapLayer();
   }
   render = () => {
     return (
@@ -28,10 +30,23 @@ class Map extends React.Component {
       };
       this.map = new google.maps.Map(document.getElementById('map'), options);
       google.maps.event.trigger(this.map, "resize");
-      var legend = document.createElement('div');
-      ReactDom.render(<MapOverlayComponent/>, legend);
-      this.map.controls[google.maps.ControlPosition.LEFT_CENTER].push(legend);
     }
+    var legend = document.createElement('div');
+    ReactDom.render(<MapOverlayComponent/>, legend);
+    this.map.controls[google.maps.ControlPosition.LEFT_CENTER].push(legend);
+    axios.get('/api/heatmap').then((response) => {
+      var heatMapData = response.data
+      .map(x => new google.maps.LatLng(x.latitude, x.longitude));
+      this.heatmap.setMap(this.map);
+      this.heatmap.setData(heatMapData);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  shouldComponentUpdate = () => {
+    return false;
   }
 }
 

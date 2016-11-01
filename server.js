@@ -41,6 +41,15 @@ api.get('/graph', (request, response) => {
   });
 });
 
+api.get('/heatmap', (request, response) => {
+  Business.find({}, 'longitude latitude').then((coordinates) => {
+    response.json(coordinates);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+});
+
 app.use('/api', api);
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
