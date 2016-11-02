@@ -1,19 +1,94 @@
-var React = require('react');
-var ReactDom = require('react-dom');
-var Modal = require('react-modal');
-var redux = require('redux');
-var axios = require('axios');
+const React = require('react');
+const ReactDom = require('react-dom');
+const Modal = require('react-modal');
+const redux = require('redux');
+const axios = require('axios');
+const State = require('./state');
 
-var Store = require('./state').Store;
-var Panel = require('./panel.jsx');
-var PivotGraph = require('./pivot.jsx');
+const Store = State.Store;
+
+const Panel = require('./panel.jsx');
+const PivotGraph = require('./pivot.jsx');
+
 
 class Map extends React.Component {
   constructor(props){
     super(props);
     this.map = null;
     this.heatmap = new google.maps.visualization.HeatmapLayer();
+    this.drawingManager = new google.maps.drawing.DrawingManager({
+      drawingMode: google.maps.drawing.OverlayType.MARKER,
+      drawingControl: true,
+      drawingControlOptions: {
+        position: google.maps.ControlPosition.TOP_CENTER,
+        drawingModes: ['circle']
+      },
+      circleOptions: {
+        fillColor: '#ffff00',
+        fillOpacity: 1,
+        strokeWeight: 5,
+        clickable: true,
+        editable: true,
+        zIndex: 1
+      }
+    });
+
+    google.maps.event.addListener(this.drawingManager, 'circlecomplete', (circle) => {
+      var state = Store.getState();
+      // We're limiting the user to 4 locations so ignore if they've reached the
+      // the max.
+      if (state.SELECTED_LOCATIONS.length == 4) {
+        return;
+      }
+      circle.data = {
+        id: +(new Date()),
+        coordinates: circle.getCenter().toJSON(),
+        radius: circle.getRadius(),
+        label: `Location ${state.SELECTED_LOCATIONS.length}`
+      };
+
+      var div = document.createElement('div');
+
+      function onInfoWindowButtonClick(value) {
+        this.data.label = value;
+        Store.dispatch(State.updateLocation(this.data));
+      }
+
+      ReactDom.render(<InfoWindowComponent
+        onButtonClick={onInfoWindowButtonClick.bind(circle)}/>, div);
+
+
+      var infoWindow = new google.maps.InfoWindow({
+        content: div
+      });
+
+      Store.dispatch(State.addLocation(circle.data));
+
+      circle.addListener('click', function(event) {
+        console.log('click');
+        infoWindow.setPosition(this.getCenter());
+        infoWindow.open(this.getMap(), this);
+      });
+
+      circle.addListener('radius_changed', function(event) {
+        this.data.radius = this.getRadius();
+        Store.dispatch(State.updateLocation(this.data));
+      });
+
+      circle.addListener('center_changed', function(event) {
+        this.data.coordinates = this.getCenter().toJSON();
+        Store.dispatch(State.updateLocation(this.data));
+      });
+
+      circle.addListener('dblclick', function(event) {
+        event.stop();
+        console.log('double click');
+        this.setMap(null);
+        Store.dispatch(State.removeLocation(this.data));
+      });
+    });
   }
+
   render = () => {
     return (
       <div id="map">
@@ -25,28 +100,56 @@ class Map extends React.Component {
   componentDidMount = () => {
     if (!this.map) {
       var options =  {
-        center: {lat: 0, lng: 0},
-        zoom: 3
+        center: {lat: 40.7128 , lng: -74.0059},
+        zoom: 12
       };
       this.map = new google.maps.Map(document.getElementById('map'), options);
-      google.maps.event.trigger(this.map, "resize");
+      // google.maps.event.trigger(this.map, "resize");
     }
+    this.drawingManager.setMap(this.map);
     var legend = document.createElement('div');
     ReactDom.render(<MapOverlayComponent/>, legend);
     this.map.controls[google.maps.ControlPosition.LEFT_CENTER].push(legend);
-    axios.get('/api/heatmap').then((response) => {
-      var heatMapData = response.data
-      .map(x => new google.maps.LatLng(x.latitude, x.longitude));
-      this.heatmap.setMap(this.map);
-      this.heatmap.setData(heatMapData);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
   }
 
   shouldComponentUpdate = () => {
     return false;
+  }
+}
+
+class InfoWindowComponent extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: this.props.defaultValue || '',
+    }
+  }
+
+  render = () => {
+    return (
+      <div>
+        <input type="text"
+          value={this.state.value}
+          onChange={this.onChange}/>
+        <a
+          className="btn btn-default btn-block btn-sm"
+          onClick={this.onClick}
+          >update label </a>
+      </div>
+    )
+  }
+
+  onChange = (event) => {
+    event.preventDefault();
+    var value = event.target.value;
+    this.setState({value: value});
+    console.log(this.state);
+  }
+
+  onClick = (event) => {
+    event.preventDefault();
+    this.props.onButtonClick(this.state.value);
   }
 }
 
@@ -77,6 +180,16 @@ class App extends React.Component {
 
   state = {
     isModalOpen: false,
+    businesses: []
+  }
+
+  constructor(props) {
+    super(props);
+
+    Store.subscribe(() => {
+      var state = Store.getState();
+      this.setState({businesses: state.BUSINESSES});
+    });
   }
 
   render = () => {
@@ -106,17 +219,16 @@ class App extends React.Component {
             </div>
           </div>
         </div>
-        <div className="col-md-9">
+        <div className="col-md-6">
           <div id="pivot-graph-container">
             <PivotGraph/>
           </div>
         </div>
+        <div className="col-md-2 col-md-offset-1">
+          <ListView items={this.state.businesses}/>
+        </div>
       </div>
     )
-  }
-
-  componentDidMount = () => {
-
   }
 
   closeModal = () => {
@@ -125,6 +237,28 @@ class App extends React.Component {
 
   openModal = () => {
     this.setState({isModalOpen: true});
+  }
+}
+
+class ListView extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render = () => {
+    var listItems = this.props.items.map((business) => {
+      return (
+        <a className="list-group-item">
+          <h5 className="list-group-item-heading">{business.name} </h5>
+          <p className="list-group-item-text"> {business.city}</p>
+        </a>
+      )
+    });
+    return (
+      <div className="list-group">
+        {listItems}
+      </div>
+    )
   }
 }
 

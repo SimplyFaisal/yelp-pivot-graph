@@ -5,7 +5,9 @@ const constants = require('./constants.js');
 const tip = require('d3-tip');
 
 const DataType = constants.DataType;
-const Store = require('./state').Store;
+const State = require('./state');
+
+const Store = State.Store;
 
 class PivotGraph extends React.Component {
 
@@ -129,6 +131,7 @@ class PivotGraph extends React.Component {
           tooltipAnchor.tooltip('hide');
         });
 
+
       svg.selectAll(".node")
           .data(G.nodes)
         .enter().append("circle")
@@ -146,6 +149,10 @@ class PivotGraph extends React.Component {
           })
           .on('mouseout', function(d) {
             tooltipAnchor.tooltip('hide');
+          })
+          .on('click', function(d) {
+            var businesses = d.nodes.map(x => x.value);
+            Store.dispatch(State.setBusinesses(businesses));
           });
 
       svg.append("g")

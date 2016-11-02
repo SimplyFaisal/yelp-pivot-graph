@@ -1,6 +1,6 @@
 'use strict';
-var graphlib = require('graphlib');
-var Promise = require('bluebird');
+const graphlib = require('graphlib');
+const Promise = require('bluebird');
 
 exports.createGraph = function(businesses) {
   return new Promise((resolve, reject) => {

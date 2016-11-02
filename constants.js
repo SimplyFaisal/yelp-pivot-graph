@@ -108,7 +108,11 @@ ActionType.initEnum({
   SET_YAXIS_ATTRIBUTE: {},
   SET_XAXIS_ATTRIBUTE: {},
   SET_LOCATIONS: {},
-  SET_GRAPH: {}
+  SET_GRAPH: {},
+  ADD_LOCATION: {},
+  REMOVE_LOCATION: {},
+  UPDATE_LOCATION: {},
+  SET_BUSINESSES: {}
 });
 
 exports.AttributeType = AttributeType;

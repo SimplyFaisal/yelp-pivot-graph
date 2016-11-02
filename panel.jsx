@@ -5,16 +5,16 @@ const axios = require('axios');
 const state = require('./state');
 const constants = require('./constants');
 
-var Store = state.Store;
-var AttributeType = constants.AttributeType;
-var ActionType = constants.ActionType;
+const Store = state.Store;
+const AttributeType = constants.AttributeType;
+const ActionType = constants.ActionType;
 
 class Panel extends React.Component {
   state = {
     xAttribute: null,
     yAttribute: null,
     isLoadingLocations: true,
-    locations: []
+    locations: [],
   }
 
   constructor(props) {
