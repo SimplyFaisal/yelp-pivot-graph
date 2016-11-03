@@ -1,5 +1,5 @@
 {
-  "name": "yelp",
+  "name": "yelp-pivot",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -28,7 +28,8 @@
     "react-modal": "^1.5.2",
     "react-select": "^1.0.0-rc.2",
     "redux": "^3.6.0",
-    "webpack-dev-server": "^1.16.2"
+    "webpack-dev-server": "^1.16.2",
+    "yelp": "^1.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.17.0",

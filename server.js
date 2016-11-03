@@ -1,18 +1,22 @@
 const express = require('express');
 const morgan = require('morgan');
 const graph = require('./graph');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const Promise = require('bluebird');
 const util = require('util');
 const credentials = require('./credentials.json');
 const app = express();
 
+const Yelp = require('yelp');
+
+const yelp = new Yelp(credentials.yelp);
 
 app.use(morgan('combined'));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 const uri = util.format('mongodb://%s:%s@ds139847.mlab.com:39847/yelp',
-  credentials.username, credentials.password);
+  credentials.mongo.username, credentials.mongo.password);
 
 const db = require('monk')(uri);
 const Business = db.get('business');
@@ -44,6 +48,60 @@ api.get('/graph', (request, response) => {
   });
 });
 
+api.post('/yelp', (request, response) => {
+  var locations = request.body.locations;
+  var EARTH_RADIUS = 6378.1 * 1000;
+  var promises = locations.map((location) => {
+    // in meters
+    return new Promise((resolve, reject) => {
+      var query = {
+        location: {
+          $nearSphere: {
+            $geometry: {
+              type: 'Point',
+              coordinates: [location.coordinates.lng, location.coordinates.lat],
+            },
+            $maxDistance: location.radius
+          }
+        }
+      };
+      // var query = {
+      //   location: {
+      //     $geoWithin: {
+      //       $centerSphere: [
+      //           [location.coordinates.lng, location.coordinates.lat],
+      //           location.radius / EARTH_RADIUS
+      //         ],
+      //     }
+      //   }
+      // };
+
+
+      Business.find(query).then((businesses) => {
+        resolve(businesses);
+      })
+      .catch((error) => {
+        response.json(error);
+      })
+   });
+ });
+
+ Promise.all(promises).then((buckets) => {
+   buckets.forEach((bucket, i) => {
+     bucket.forEach((business) => {
+       business.location_id = locations[i].id;
+     });
+   })
+   var businesses = buckets.reduce((x, y) => {
+     return x.concat(y);
+   });
+   graph.createGraph(businesses).then((G) => {
+     response.json(G);
+   });
+ });
+});
+
+
 api.get('/heatmap', (request, response) => {
   Business.find({}, 'longitude latitude').then((coordinates) => {
     response.json(coordinates);
@@ -53,11 +111,23 @@ api.get('/heatmap', (request, response) => {
   });
 });
 
-api.post('/yelp', (request, response) => {
-  var locations = request.body.locations;
-  console.dir(locations);
-  response.send('sucesss');
-});
+// api.post('/yelp', (request, response) => {
+//   var promises = request.body.locations.map((location) => {
+//     return new Promise((resolve, reject) => {
+//       yelp.search({
+//         ll: location.coordinates.lat + ',' + location.coordinates.lng,
+//          // if the value is to large it will throw an error so cap at 40000.
+//         radius_filter: Math.min(location.radius, 40000)
+//       }).then((data) => {
+//        console.log(data);
+//        resolve(data);
+//      }).catch((error) => {
+//        reject(error);
+//      });
+//    });
+//  });
+//   response.send('sucesss');
+// });
 
 app.use('/api', api);
 app.listen(3000, function () {

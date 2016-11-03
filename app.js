@@ -49,6 +49,12 @@ class Map extends React.Component {
     });
     this.colors = COLORS;
 
+    axios.get('/api/heatmap').then((response) => {
+      this.heatmap.setData(response.data.map((x) => {
+        return new google.maps.LatLng(x.latitude, x.longitude);
+      }));
+    })
+
     google.maps.event.addListener(this.drawingManager, 'circlecomplete', (circle) => {
       var state = Store.getState();
       // We're limiting the user to 4 locations so ignore if they've reached the
@@ -86,11 +92,12 @@ class Map extends React.Component {
     if (!this.map) {
       var options =  {
         center: {lat: 40.7128 , lng: -74.0059},
-        zoom: 12
+        zoom: 4
       };
       this.map = new google.maps.Map(document.getElementById('map'), options);
       google.maps.event.trigger(this.map, "resize");
     }
+    this.heatmap.setMap(this.map);
     var state = Store.getState();
     this.drawingManager.setMap(this.map);
     var legend = document.createElement('div');
