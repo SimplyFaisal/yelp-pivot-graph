@@ -1,12 +1,15 @@
 const express = require('express');
-const app = express();
 const morgan = require('morgan');
 const graph = require('./graph');
+const bodyParser = require('body-parser')
 const util = require('util');
 const credentials = require('./credentials.json');
+const app = express();
 
 
 app.use(morgan('combined'));
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
 const uri = util.format('mongodb://%s:%s@ds139847.mlab.com:39847/yelp',
   credentials.username, credentials.password);
@@ -51,6 +54,8 @@ api.get('/heatmap', (request, response) => {
 });
 
 api.post('/yelp', (request, response) => {
+  var locations = request.body.locations;
+  console.dir(locations);
   response.send('sucesss');
 });
 

@@ -135,7 +135,7 @@ class Panel extends React.Component {
       results.forEach((result, i) => {
         locations[i].address = result[0].formatted_address;
       });
-      axios.post('/api/yelp', {data: {locations: locations}})
+      axios.post('/api/yelp', {locations: locations})
         .then((response) => {
         console.log(response.data);
       });
