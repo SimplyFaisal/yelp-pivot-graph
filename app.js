@@ -47,8 +47,7 @@ class Map extends React.Component {
         zIndex: 1
       }
     });
-    this.colorBag = new Bag();
-    this.colorBag.addAll(COLORS);
+    this.colors = COLORS;
 
     google.maps.event.addListener(this.drawingManager, 'circlecomplete', (circle) => {
       var state = Store.getState();
@@ -58,7 +57,7 @@ class Map extends React.Component {
         circle.setMap(null);
         return;
       }
-      var color = this.colorBag.removeLast();
+      var color = this.colors.pop();
       circle.data = {
         id: +(new Date()),
         coordinates: circle.getCenter().toJSON(),
@@ -104,7 +103,8 @@ class Map extends React.Component {
         center: location.coordinates,
         clickable: true,
         editable: true,
-        zIndex: 1
+        zIndex: 1,
+        fillColor: location.color.hex
       });
       circle.data = location;
       this.configureCircle(circle);
@@ -114,7 +114,8 @@ class Map extends React.Component {
 
   configureCircle = (circle) => {
     var div = document.createElement('div');
-    var colorBag = this.colorBag;
+    var colors = this.colors;
+
     function onInfoWindowButtonClick(value) {
       this.data.label = value;
       Store.dispatch(State.updateLocation(this.data));
@@ -144,13 +145,9 @@ class Map extends React.Component {
     circle.addListener('rightclick', function(event) {
       event.stop();
       this.setMap(null);
-      colorBag.add(this.data.color);
-      Store.dispatch(State.removeLocation(this.data));
+      colors.push(this.data.color);
+      Store.dispatch(State.removeLocation(this.data.id));
     });
-  }
-
-  shouldComponentUpdate = () => {
-    return false;
   }
 }
 
@@ -181,7 +178,6 @@ class InfoWindowComponent extends React.Component {
     event.preventDefault();
     var value = event.target.value;
     this.setState({value: value});
-    console.log(this.state);
   }
 
   onClick = (event) => {
@@ -204,8 +200,11 @@ class MapOverlayComponent extends React.Component {
 
    render = () => {
      var items = this.state.locations.map((x) => {
+       var style = {
+         backgroundColor: x.color.hex
+       };
        return (
-         <a key={x.id} className="list-group-item active">
+         <a key={x.id} className="list-group-item" style={style}>
            {x.label}
          </a>
        )

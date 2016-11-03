@@ -34,6 +34,19 @@ class Panel extends React.Component {
   }
 
   render () {
+    var locationPanels =  this.state.locations.map((x) => {
+        // var c = `list-group-item {x.color.class}`;
+        var style = {
+          backgroundColor: x.color.hex
+        };
+        return (
+          <a key={x.id} className="list-group-item" style={style}>
+            {x.label}
+          </a>
+          // <span className={c}>Default</span>
+        )
+      });
+
     return (
       <div className="">
         <div className="">
@@ -45,17 +58,7 @@ class Panel extends React.Component {
             loadOptions={this.getLocations}
             onChange={this.onLocationChange}
           /> */}
-          <div className="list-group">
-            {
-              this.state.locations.map((x) => {
-                return (
-                  <a key={x.id} className="list-group-item">
-                    {x.label}
-                  </a>
-                )
-              })
-            }
-          </div>
+          {locationPanels}
 
           <h5> x axis</h5>
           <Select
@@ -114,7 +117,7 @@ class Panel extends React.Component {
   onGraphButtonClick(event) {
     event.preventDefault();
     var state = Store.getState();
-    var locations = state['SELECTED_LOCATIONS'];
+    var locations = state.SELECTED_LOCATIONS;
 
     var promises = locations.map((x) => {
       return new Promise((resolve, reject) => {

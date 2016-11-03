@@ -11,7 +11,7 @@ var initialState = {
   LOCATIONS: null,
   GRAPH: null,
   SELECTED_LOCATIONS: [],
-  BUSINESSES: []
+  BUSINESSES: [],
 };
 
 function reducer(state, action) {
