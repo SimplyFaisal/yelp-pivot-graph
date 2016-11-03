@@ -50,6 +50,10 @@ api.get('/heatmap', (request, response) => {
   });
 });
 
+api.post('/yelp', (request, response) => {
+  response.send('sucesss');
+});
+
 app.use('/api', api);
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');

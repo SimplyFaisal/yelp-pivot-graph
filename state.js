@@ -1,5 +1,6 @@
 const redux = require('redux');
 const constants = require('./constants');
+import * as d3 from "d3";
 
 const AttributeType = constants.AttributeType;
 const ActionType = constants.ActionType;

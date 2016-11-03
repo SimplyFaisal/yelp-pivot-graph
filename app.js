@@ -4,12 +4,30 @@ const Modal = require('react-modal');
 const redux = require('redux');
 const axios = require('axios');
 const State = require('./state');
+const Bag = require('bag').Bag;
 
 const Store = State.Store;
 
 const Panel = require('./panel.jsx');
 const PivotGraph = require('./pivot.jsx');
-
+const COLORS = [
+  {
+    class: 'danger',
+    hex: '#ff4136'
+  },
+  {
+    class: 'success',
+    hex: '#28b62c'
+  },
+  {
+    class: 'warning',
+    hex: '#ff851b'
+  },
+  {
+    class: 'info',
+    hex: '#75caeb'
+  }
+];
 
 class Map extends React.Component {
   constructor(props){
@@ -24,68 +42,36 @@ class Map extends React.Component {
         drawingModes: ['circle']
       },
       circleOptions: {
-        fillColor: '#ffff00',
-        fillOpacity: 1,
-        strokeWeight: 5,
         clickable: true,
         editable: true,
         zIndex: 1
       }
     });
+    this.colorBag = new Bag();
+    this.colorBag.addAll(COLORS);
 
     google.maps.event.addListener(this.drawingManager, 'circlecomplete', (circle) => {
       var state = Store.getState();
       // We're limiting the user to 4 locations so ignore if they've reached the
       // the max.
       if (state.SELECTED_LOCATIONS.length == 4) {
+        circle.setMap(null);
         return;
       }
+      var color = this.colorBag.removeLast();
       circle.data = {
         id: +(new Date()),
         coordinates: circle.getCenter().toJSON(),
         radius: circle.getRadius(),
-        label: `Location ${state.SELECTED_LOCATIONS.length}`
+        label: `Location ${state.SELECTED_LOCATIONS.length}`,
+        color: color
       };
 
-      var div = document.createElement('div');
-
-      function onInfoWindowButtonClick(value) {
-        this.data.label = value;
-        Store.dispatch(State.updateLocation(this.data));
-      }
-
-      ReactDom.render(<InfoWindowComponent
-        onButtonClick={onInfoWindowButtonClick.bind(circle)}/>, div);
-
-
-      var infoWindow = new google.maps.InfoWindow({
-        content: div
+      circle.setOptions({
+        fillColor: color.hex
       });
-
+      this.configureCircle(circle);
       Store.dispatch(State.addLocation(circle.data));
-
-      circle.addListener('click', function(event) {
-        console.log('click');
-        infoWindow.setPosition(this.getCenter());
-        infoWindow.open(this.getMap(), this);
-      });
-
-      circle.addListener('radius_changed', function(event) {
-        this.data.radius = this.getRadius();
-        Store.dispatch(State.updateLocation(this.data));
-      });
-
-      circle.addListener('center_changed', function(event) {
-        this.data.coordinates = this.getCenter().toJSON();
-        Store.dispatch(State.updateLocation(this.data));
-      });
-
-      circle.addListener('dblclick', function(event) {
-        event.stop();
-        console.log('double click');
-        this.setMap(null);
-        Store.dispatch(State.removeLocation(this.data));
-      });
     });
   }
 
@@ -104,12 +90,63 @@ class Map extends React.Component {
         zoom: 12
       };
       this.map = new google.maps.Map(document.getElementById('map'), options);
-      // google.maps.event.trigger(this.map, "resize");
+      google.maps.event.trigger(this.map, "resize");
     }
+    var state = Store.getState();
     this.drawingManager.setMap(this.map);
     var legend = document.createElement('div');
     ReactDom.render(<MapOverlayComponent/>, legend);
     this.map.controls[google.maps.ControlPosition.LEFT_CENTER].push(legend);
+
+    var locations = state.SELECTED_LOCATIONS.forEach((location) => {
+      var circle = new google.maps.Circle({
+        radius: location.radius,
+        center: location.coordinates,
+        clickable: true,
+        editable: true,
+        zIndex: 1
+      });
+      circle.data = location;
+      this.configureCircle(circle);
+      circle.setMap(this.map);
+    });
+  }
+
+  configureCircle = (circle) => {
+    var div = document.createElement('div');
+    var colorBag = this.colorBag;
+    function onInfoWindowButtonClick(value) {
+      this.data.label = value;
+      Store.dispatch(State.updateLocation(this.data));
+    }
+
+    ReactDom.render(<InfoWindowComponent
+      onButtonClick={onInfoWindowButtonClick.bind(circle)}
+      defaultValue={circle.data.label}/>, div);
+
+    var infoWindow = new google.maps.InfoWindow({content: div});
+
+    circle.addListener('click', function(event) {
+      infoWindow.setPosition(this.getCenter());
+      infoWindow.open(this.getMap(), this);
+    });
+
+    circle.addListener('radius_changed', function(event) {
+      this.data.radius = this.getRadius();
+      Store.dispatch(State.updateLocation(this.data));
+    });
+
+    circle.addListener('center_changed', function(event) {
+      this.data.coordinates = this.getCenter().toJSON();
+      Store.dispatch(State.updateLocation(this.data));
+    });
+
+    circle.addListener('rightclick', function(event) {
+      event.stop();
+      this.setMap(null);
+      colorBag.add(this.data.color);
+      Store.dispatch(State.removeLocation(this.data));
+    });
   }
 
   shouldComponentUpdate = () => {
@@ -154,18 +191,30 @@ class InfoWindowComponent extends React.Component {
 }
 
 class MapOverlayComponent extends React.Component {
+  state = {
+    locations: []
+  }
    constructor(props) {
      super(props);
+     Store.subscribe(() => {
+       var state = Store.getState();
+       this.setState({locations: state.SELECTED_LOCATIONS});
+     });
    }
 
    render = () => {
+     var items = this.state.locations.map((x) => {
+       return (
+         <a key={x.id} className="list-group-item active">
+           {x.label}
+         </a>
+       )
+     })
      return (
        <div id="map-overlay">
-         <div className="panel panel-default">
-            <div className="panel-body">
-              Basic panel
-            </div>
-        </div>
+          <div className="list-group">
+            {items}
+          </div>
       </div>
      );
    }

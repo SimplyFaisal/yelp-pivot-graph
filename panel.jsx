@@ -1,5 +1,6 @@
 const React = require('react');
 const Select = require('react-select');
+const Promise = require('bluebird');
 const axios = require('axios');
 
 const state = require('./state');
@@ -24,20 +25,37 @@ class Panel extends React.Component {
     this.onLocationChange = this.onLocationChange.bind(this);
     this.getLocations = this.getLocations.bind(this);
     this.onGraphButtonClick = this.onGraphButtonClick.bind(this);
+    this.geocoder = new google.maps.Geocoder;
+
+    Store.subscribe(() => {
+      var state = Store.getState();
+      this.setState({locations: state.SELECTED_LOCATIONS});
+    });
   }
 
   render () {
     return (
       <div className="">
         <div className="">
-          <Select.Async
+          {/* <Select.Async
             name="locations"
             multi={true}
             value={this.state.locations}
             isLoading={this.state.isLoadingLocations}
             loadOptions={this.getLocations}
             onChange={this.onLocationChange}
-          />
+          /> */}
+          <div className="list-group">
+            {
+              this.state.locations.map((x) => {
+                return (
+                  <a key={x.id} className="list-group-item">
+                    {x.label}
+                  </a>
+                )
+              })
+            }
+          </div>
 
           <h5> x axis</h5>
           <Select
@@ -80,7 +98,7 @@ class Panel extends React.Component {
     Store.dispatch({type: ActionType.SET_LOCATIONS, locations: values})
   }
 
-  onGraphButtonClick(event) {
+  onGraphButtonClick1(event) {
     event.preventDefault();
     var state = Store.getState();
     var locations = state['LOCATIONS'].map(x => x.value).join(',');
@@ -88,6 +106,42 @@ class Panel extends React.Component {
         .then((response) => {
       Store.dispatch({type: ActionType.SET_GRAPH, graph: response.data});
     })
+    // .catch((error) => {
+    //   console.error(error);
+    // });
+  }
+
+  onGraphButtonClick(event) {
+    event.preventDefault();
+    var state = Store.getState();
+    var locations = state['SELECTED_LOCATIONS'];
+
+    var promises = locations.map((x) => {
+      return new Promise((resolve, reject) => {
+        this.geocoder.geocode({location: x.coordinates}, (results, status) => {
+          if (status === 'OK') {
+            resolve(results);
+          } else {
+            reject(status);
+          }
+        });
+      })
+    });
+
+    Promise.all(promises).then((results) => {
+      results.forEach((result, i) => {
+        locations[i].address = result[0].formatted_address;
+      });
+      axios.post('/api/yelp', {data: {locations: locations}})
+        .then((response) => {
+        console.log(response.data);
+      });
+    });
+
+    // axios.get('/api/graph', {params: {locations: locations}})
+    //     .then((response) => {
+    //   Store.dispatch({type: ActionType.SET_GRAPH, graph: response.data});
+    // })
     // .catch((error) => {
     //   console.error(error);
     // });
