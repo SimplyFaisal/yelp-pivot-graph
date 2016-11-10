@@ -1,5 +1,8 @@
+const util = require('util');
 const credentials = require('./credentials.json');
-const db = require('monk')('localhost/yelp');
+const uri = util.format('mongodb://%s:%s@ds139847.mlab.com:39847/yelp',
+  credentials.mongo.username, credentials.mongo.password);
+const db = require('monk')(uri);
 const Business = db.get('business');
 const User = db.get('user');
 const Review = db.get('review')

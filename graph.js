@@ -16,7 +16,7 @@ exports.createGraph = function(businesses) {
         if (x.business_id != y.business_id) {
           var intersection = Array.from(x.categories)
                 .filter(category => y.categories.has(category));
-          if (intersection.length >= 2) {
+          if (intersection.length >= 3) {
             G.setEdge(x.business_id, y.business_id);
           }
         }

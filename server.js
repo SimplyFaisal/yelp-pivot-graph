@@ -15,10 +15,9 @@ app.use(morgan('combined'));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-// const uri = util.format('mongodb://%s:%s@ds139847.mlab.com:39847/yelp',
-//   credentials.mongo.username, credentials.mongo.password);
+const uri = util.format('mongodb://%s:%s@ds139847.mlab.com:39847/yelp',
+  credentials.mongo.username, credentials.mongo.password);
 
-var uri = 'localhost/yelp'
 const db = require('monk')(uri);
 const Business = db.get('business');
 const User = db.get('user');
@@ -55,17 +54,6 @@ api.post('/yelp', (request, response) => {
   var promises = locations.map((location) => {
     // in meters
     return new Promise((resolve, reject) => {
-      // var query = {
-      //   location: {
-      //     $nearSphere: {
-      //       $geometry: {
-      //         type: 'Point',
-      //         coordinates: [location.coordinates.lng, location.coordinates.lat],
-      //       },
-      //       $maxDistance: location.radius
-      //     }
-      //   }
-      // };
       var query = {
         location: {
           $geoWithin: {
