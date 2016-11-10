@@ -78,4 +78,7 @@ exports.setBusinesses = function(businesses) {
   return {type:ActionType.SET_BUSINESSES, businesses: businesses};
 };
 
+exports.setGraph = function(graph) {
+  return {type: ActionType.SET_GRAPH, graph: graph};
+}
 exports.Store = redux.createStore(reducer, initialState);;

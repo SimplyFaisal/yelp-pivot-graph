@@ -53,6 +53,7 @@ class Map extends React.Component {
       this.heatmap.setData(response.data.map((x) => {
         return new google.maps.LatLng(x.latitude, x.longitude);
       }));
+      this.heatmap.setMap(this.map);
     })
 
     google.maps.event.addListener(this.drawingManager, 'circlecomplete', (circle) => {
@@ -97,7 +98,6 @@ class Map extends React.Component {
       this.map = new google.maps.Map(document.getElementById('map'), options);
       google.maps.event.trigger(this.map, "resize");
     }
-    this.heatmap.setMap(this.map);
     var state = Store.getState();
     this.drawingManager.setMap(this.map);
     var legend = document.createElement('div');
@@ -226,7 +226,7 @@ class MapOverlayComponent extends React.Component {
    }
 
    componentDidMount = () => {
-     console.log('component did mount');
+    //  console.log('component did mount');
    }
 }
 

@@ -6,9 +6,10 @@ const axios = require('axios');
 const state = require('./state');
 const constants = require('./constants');
 
-const Store = state.Store;
+const State = require('./state');
 const AttributeType = constants.AttributeType;
 const ActionType = constants.ActionType;
+const Store = State.Store;
 
 class Panel extends React.Component {
   state = {
@@ -117,37 +118,10 @@ class Panel extends React.Component {
   onGraphButtonClick(event) {
     event.preventDefault();
     var state = Store.getState();
-    var locations = state.SELECTED_LOCATIONS;
-
-    var promises = locations.map((x) => {
-      return new Promise((resolve, reject) => {
-        this.geocoder.geocode({location: x.coordinates}, (results, status) => {
-          if (status === 'OK') {
-            resolve(results);
-          } else {
-            reject(status);
-          }
-        });
-      })
+    axios.post('/api/yelp', {locations:  state.SELECTED_LOCATIONS})
+    .then((response) => {
+      Store.dispatch(State.setGraph(response.data));
     });
-
-    Promise.all(promises).then((results) => {
-      results.forEach((result, i) => {
-        locations[i].address = result[0].formatted_address;
-      });
-      axios.post('/api/yelp', {locations: locations})
-        .then((response) => {
-        console.log(response.data);
-      });
-    });
-
-    // axios.get('/api/graph', {params: {locations: locations}})
-    //     .then((response) => {
-    //   Store.dispatch({type: ActionType.SET_GRAPH, graph: response.data});
-    // })
-    // .catch((error) => {
-    //   console.error(error);
-    // });
   }
 
   getLocations(input) {
