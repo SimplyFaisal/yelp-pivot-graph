@@ -29,6 +29,7 @@
     "react-select": "^1.0.0-rc.2",
     "redux": "^3.6.0",
     "webpack-dev-server": "^1.16.2",
+    "winston": "^2.3.0",
     "yelp": "^1.0.1"
   },
   "devDependencies": {

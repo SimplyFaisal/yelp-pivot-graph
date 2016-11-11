@@ -235,16 +235,11 @@ class App extends React.Component {
 
   state = {
     isModalOpen: false,
-    businesses: []
+    selectedBusinesses: []
   }
 
   constructor(props) {
     super(props);
-
-    Store.subscribe(() => {
-      var state = Store.getState();
-      this.setState({businesses: state.BUSINESSES});
-    });
   }
 
   render = () => {
@@ -276,11 +271,11 @@ class App extends React.Component {
         </div>
         <div className="col-md-6">
           <div id="pivot-graph-container">
-            <PivotGraph/>
+            <PivotGraph onNodeClick={this.setSelectedBusinesses}/>
           </div>
         </div>
         <div className="col-md-2 col-md-offset-1">
-          <ListView items={this.state.businesses}/>
+          <ListView items={this.state.selectedBusinesses}/>
         </div>
       </div>
     )
@@ -293,6 +288,10 @@ class App extends React.Component {
   openModal = () => {
     this.setState({isModalOpen: true});
   }
+
+  setSelectedBusinesses = (businesses) => {
+    this.setState({selectedBusinesses: businesses});
+  }
 }
 
 class ListView extends React.Component {
@@ -303,7 +302,7 @@ class ListView extends React.Component {
   render = () => {
     var listItems = this.props.items.map((business) => {
       return (
-        <a className="list-group-item">
+        <a className="list-group-item" key={business.business_id}>
           <h5 className="list-group-item-heading">{business.name} </h5>
           <p className="list-group-item-text"> {business.city}</p>
         </a>

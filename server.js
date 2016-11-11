@@ -1,23 +1,22 @@
 const express = require('express');
-const morgan = require('morgan');
-const graph = require('./graph');
 const bodyParser = require('body-parser');
-const Promise = require('bluebird');
+const morgan = require('morgan');
+const winston = require('winston');
 const util = require('util');
+const Promise = require('bluebird');
+
 const credentials = require('./credentials.json');
+const graph = require('./graph');
+
 const app = express();
-
-const Yelp = require('yelp');
-
-const yelp = new Yelp(credentials.yelp);
 
 app.use(morgan('combined'));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-const uri = util.format('mongodb://%s:%s@ds139847.mlab.com:39847/yelp',
-  credentials.mongo.username, credentials.mongo.password);
-
+// const uri = util.format('mongodb://%s:%s@ds139847.mlab.com:39847/yelp',
+//   credentials.mongo.username, credentials.mongo.password);
+const uri = 'localhost/yelp'
 const db = require('monk')(uri);
 const Business = db.get('business');
 const User = db.get('user');
@@ -34,17 +33,17 @@ api.get('/locations', (request, response) => {
 
 api.get('/graph', (request, response) => {
   var locations = request.query.locations.split(',');
-  var query = {city: {$in: locations}, categories: 'Restaurants'};
+  var query = {city: {$in: locations}, };
   Business.find(query).then((businesses) => {
     graph.createGraph(businesses).then((G) => {
       response.json(G);
     })
     .catch((error) => {
-      console.error(error);
+      winston.error(error);
     });
   })
   .catch((error) => {
-    console.error(error);
+    winston.error(error);
   });
 });
 
@@ -55,6 +54,7 @@ api.post('/yelp', (request, response) => {
     // in meters
     return new Promise((resolve, reject) => {
       var query = {
+        categories: 'Restaurants',
         location: {
           $geoWithin: {
             $centerSphere: [
@@ -92,15 +92,15 @@ api.post('/yelp', (request, response) => {
 
 
 api.get('/heatmap', (request, response) => {
-  Business.find({}, 'longitude latitude').then((coordinates) => {
+  Business.find({categories: 'Restaurants'}, 'longitude latitude').then((coordinates) => {
     response.json(coordinates);
   })
   .catch((error) => {
-    console.error(error);
+    winston.error(error);
   });
 });
 
 app.use('/api', api);
 app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+  winston.info('Server listening on port 3000.');
 });

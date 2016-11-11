@@ -66,3 +66,8 @@ html, body {
 .tooltip {
   pointer-events: none;
 }
+
+.list-group {
+  height: 400px;
+  overflow-y: scroll;
+}

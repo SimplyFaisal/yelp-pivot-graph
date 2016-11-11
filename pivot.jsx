@@ -9,12 +9,17 @@ const State = require('./state');
 
 const Store = State.Store;
 
+
 class PivotGraph extends React.Component {
+
+  state = {
+    selectedBusinesses: []
+  }
 
   constructor(props) {
     super(props);
     this.svg = null;
-    this.margin = {top: 50, right: 50, bottom: 50, left: 50};
+    this.margin = {top: 25, right: 50, bottom: 50, left: 50};
     this.width = 700 - this.margin.left - this.margin.right,
     this.height = 700 - this.margin.top - this.margin.bottom;
   }
@@ -131,7 +136,7 @@ class PivotGraph extends React.Component {
           tooltipAnchor.tooltip('hide');
         });
 
-
+      var self = this;
       svg.selectAll(".node")
           .data(G.nodes)
         .enter().append("circle")
@@ -151,8 +156,14 @@ class PivotGraph extends React.Component {
             tooltipAnchor.tooltip('hide');
           })
           .on('click', function(d) {
-            var businesses = d.nodes.map(x => x.value);
-            Store.dispatch(State.setBusinesses(businesses));
+            svg.selectAll('.node')
+              .attr('stroke', 'none')
+              .attr('stroke-width', 'none');
+
+            d3.select(this)
+              .attr('stroke', "#f1c40f")
+              .attr('stroke-width', '3px');
+            self.props.onNodeClick(d.nodes.map(x => x.value));
           });
 
       svg.append("g")
