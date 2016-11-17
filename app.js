@@ -268,6 +268,20 @@ class App extends React.Component {
               </div>
             </div>
           </div>
+
+          <div className="panel panel-info">
+            <div className="panel-heading">
+              <h3 className="panel-title">About</h3>
+            </div>
+            <div className="panel-body">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+              sed do eiusmod tempor incididunt ut labore et dolore magna
+              aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+              ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              Duis aute irure dolor in reprehenderit in voluptate velit
+              esse cillum dolore eu fugiat nulla pariatur.
+            </div>
+          </div>
         </div>
         <div className="col-md-6">
           <div id="pivot-graph-container">
@@ -301,8 +315,15 @@ class ListView extends React.Component {
 
   render = () => {
     var listItems = this.props.items.map((business) => {
+      var name = business.name.split(' ').join('-').toLowerCase();
+      var city = business.city.split(' ').join('-').toLowerCase();
+      var link = `https://www.yelp.com/biz/${name}-${city}`;
       return (
-        <a className="list-group-item" key={business.business_id}>
+        <a
+          className="list-group-item"
+          key={business.business_id}
+          href={link}
+          target='_blank'>
           <h5 className="list-group-item-heading">{business.name} </h5>
           <p className="list-group-item-text"> {business.city}</p>
         </a>
