@@ -46,7 +46,10 @@ class PivotGraph extends React.Component {
 
       var fx = xAttribute.f;
       var fy = yAttribute.f;
-
+      var colorMap = {};
+      state.SELECTED_LOCATIONS.forEach((location) => {
+        colorMap[location.id] = location.color.hex;
+      });
       var filteredNodes = G.nodes.filter(x => fx(x) != undefined && fy(x) != undefined);
       var filteredNodeIds = d3.set(filteredNodeIds, x => x.v);
       G.nodes = G.nodes.filter(x => !filteredNodeIds.has(x.v));
@@ -80,6 +83,25 @@ class PivotGraph extends React.Component {
         .y(d => yScale(fy(d)));
 
       G = rollup(G);
+      G.nodes = G.nodes.map((node) => {
+        var counter = {};
+        node.nodes.forEach((n) => {
+          var location_id = n.value.location_id;
+          if (!counter[location_id]) {
+            counter[location_id] = 0;
+          }
+          counter[location_id]++
+        })
+        node.pie = Object.keys(counter).map((location) => {
+          return {
+            location_id: location,
+            count: counter[location],
+            x: node.x,
+            y: node.y
+          };
+        })
+        return node;
+      });
 
       var radiusScale = d3.scaleLinear()
           .domain(d3.extent(G.nodes, x => x.nodes.length))
@@ -165,6 +187,21 @@ class PivotGraph extends React.Component {
               .attr('stroke-width', '3px');
             self.props.onNodeClick(d.nodes.map(x => x.value));
           });
+
+      G.nodes.forEach((node) => {
+        var arc = d3.arc()
+          .innerRadius(radiusScale(node.nodes.length))
+          .outerRadius(radiusScale(node.nodes.length) * 1.2);
+
+        var pie = d3.pie().value(x => x.count)(node.pie);
+        var path = svg.selectAll('.arc')
+          .data(pie)
+          .enter()
+          .append('path')
+          .attr('d', arc)
+          .attr('transform', d => `translate(${d.data.x}, ${d.data.y})`)
+          .style('fill', d => colorMap[d.data.location_id]);
+      });
 
       svg.append("g")
           .attr("class", "x axis")
