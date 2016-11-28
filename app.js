@@ -29,6 +29,16 @@ const COLORS = [
   }
 ];
 
+  // $(".gmnoprint").each(function(){
+  //   alert("inthere!");
+  //   var newObj = $(this).find("[title='Draw a circle']");
+  //   newObj.attr("id", "circle");
+
+  //   // ID the Hand button
+  //   newObj = $(this).find("[title='Stop drawing']");
+  //   newObj.attr('id', 'hand');
+  // });
+
 class Map extends React.Component {
   constructor(props){
     super(props);
@@ -56,6 +66,7 @@ class Map extends React.Component {
       this.heatmap.setMap(this.map);
     })
 
+
     google.maps.event.addListener(this.drawingManager, 'circlecomplete', (circle) => {
       var state = Store.getState();
       // We're limiting the user to 4 locations so ignore if they've reached the
@@ -79,6 +90,64 @@ class Map extends React.Component {
       this.configureCircle(circle);
       Store.dispatch(State.addLocation(circle.data));
     });
+
+    var stepOne = function() {
+      var wholeDiv = $($('<div class = "step1">This is a popover explanation<br></div>'));
+      var pic = $($('<img id="dynamic">'));
+      pic.attr('src', 'selectcircle.gif');
+      wholeDiv.append(pic);
+      return wholeDiv;
+    };
+
+     var stepTwo = function() {
+      var wholeDiv = $($('<div class = "step1">This is a popover explanation for step 2<br></div>'));
+      var pic = $($('<img id="dynamic">'));
+      pic.attr('src', 'drawcircle.gif');
+      wholeDiv.append(pic);
+      return wholeDiv;
+    };
+    var stepThree = function() {
+      var wholeDiv = $($('<div class = "step1">This is a popover explanation for step 3<br></div>'));
+      var pic = $($('<img id="dynamic">'));
+      pic.attr('src', 'labelcircle.gif');
+      wholeDiv.append(pic);
+      return wholeDiv;
+    };
+    var stepFour = function() {
+      var wholeDiv = $($('<div class = "step1">This is a popover explanation for step 4<br></div>'));
+      var pic = $($('<img id="dynamic">'));
+      pic.attr('src', 'addmore.gif');
+      wholeDiv.append(pic);
+      return wholeDiv;
+    };
+
+    var tour = new Tour({
+  steps: [
+  {
+    title: "Select Circle Tool",
+    content: stepOne
+  },
+  {
+    title: "Draw Your First Circle",
+    content: stepTwo
+  },
+  {
+    title: "Label Your First Circle",
+    content: stepThree
+  },
+  {
+    title: "Add More Circles",
+    content: stepFour
+  }
+
+], orphan: true, storage: false, backdrop: true
+});
+
+// Initialize the tour
+tour.init();
+
+// Start the tour
+tour.start();
   }
 
   render = () => {

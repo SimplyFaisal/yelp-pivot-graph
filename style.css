@@ -71,3 +71,8 @@ html, body {
   height: 400px;
   overflow-y: scroll;
 }
+
+.popover .orphan {
+  max-width: 500px;
+  left: 100px;
+}
