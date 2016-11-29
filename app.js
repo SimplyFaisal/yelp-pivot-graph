@@ -383,17 +383,25 @@ class ListView extends React.Component {
   }
 
   render = () => {
+    var colorMap = {};
+    Store.getState().SELECTED_LOCATIONS.forEach((location) => {
+      colorMap[location.id] = location.color.hex;
+    });
     var listItems = this.props.items.map((business) => {
       var name = business.name.split(' ').join('-').toLowerCase();
       var city = business.city.split(' ').join('-').toLowerCase();
       var link = `https://www.yelp.com/biz/${name}-${city}`;
+      var style = {
+        backgroundColor: colorMap[business.location_id]
+      };
       return (
         <a
           className="list-group-item"
           key={business.business_id}
           href={link}
+          style={style}
           target='_blank'>
-          <h5 className="list-group-item-heading">{business.name} </h5>
+          <h5 className="list-group-item-heading"><b>{business.name} </b></h5>
           <p className="list-group-item-text"> {business.city}</p>
         </a>
       )
