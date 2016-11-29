@@ -17,6 +17,7 @@ class Panel extends React.Component {
     yAttribute: null,
     isLoadingLocations: true,
     locations: [],
+    isLoading: false
   }
 
   constructor(props) {
@@ -76,7 +77,7 @@ class Panel extends React.Component {
               options={AttributeType.enumValues}
               onChange={this.onYChange}
           />
-
+          {this.state.isLoading ? 'Loading....' : ''}
           <a
             className="btn btn-danger btn-lg btn-block"
             onClick={this.onGraphButtonClick}>
@@ -118,8 +119,10 @@ class Panel extends React.Component {
   onGraphButtonClick(event) {
     event.preventDefault();
     var state = Store.getState();
+    this.setState({isLoading: true});
     axios.post('/api/yelp', {locations:  state.SELECTED_LOCATIONS})
     .then((response) => {
+      this.setState({isLoading: false});
       Store.dispatch(State.setGraph(response.data));
     });
   }

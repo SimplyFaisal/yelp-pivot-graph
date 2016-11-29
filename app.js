@@ -192,16 +192,27 @@ tour.start();
     var div = document.createElement('div');
     var colors = this.colors;
 
+    var infoWindow = new google.maps.InfoWindow();
+
     function onInfoWindowButtonClick(value) {
       this.data.label = value;
       Store.dispatch(State.updateLocation(this.data));
     }
 
+    function onInfoWindowKeyPress(event) {
+      if (event.charCode == 13) {
+        this.close();
+      }
+    }
+
     ReactDom.render(<InfoWindowComponent
       onButtonClick={onInfoWindowButtonClick.bind(circle)}
+      onKeyPress={onInfoWindowKeyPress.bind(infoWindow)}
       defaultValue={circle.data.label}/>, div);
 
-    var infoWindow = new google.maps.InfoWindow({content: div});
+    infoWindow.setContent(div);
+
+
 
     circle.addListener('click', function(event) {
       infoWindow.setPosition(this.getCenter());
@@ -241,7 +252,8 @@ class InfoWindowComponent extends React.Component {
       <div>
         <input type="text"
           value={this.state.value}
-          onChange={this.onChange}/>
+          onChange={this.onChange}
+          onKeyPress={this.onKeyPress}/>
         <a
           className="btn btn-default btn-block btn-sm"
           onClick={this.onClick}
@@ -258,6 +270,11 @@ class InfoWindowComponent extends React.Component {
 
   onClick = (event) => {
     event.preventDefault();
+    this.props.onButtonClick(this.state.value);
+  }
+
+  onKeyPress = (event) => {
+    this.props.onKeyPress(event);
     this.props.onButtonClick(this.state.value);
   }
 }
