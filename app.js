@@ -355,7 +355,7 @@ class App extends React.Component {
             </div>
           </div>
 
-          <div className="panel panel-info">
+          <div className="panel panel-danger">
             <div className="panel-heading">
               <h3 className="panel-title">About</h3>
             </div>
