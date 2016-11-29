@@ -68,7 +68,7 @@ html, body {
 }
 
 .list-group {
-  height: 400px;
+  height: 100vh;
   overflow-y: scroll;
 }
 
