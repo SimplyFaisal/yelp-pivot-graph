@@ -407,8 +407,18 @@ class ListView extends React.Component {
   }
 
   render = () => {
+    if (this.props.items.length == 0) {
+      return (
+        <div className="panel panel-default">
+          <div className="panel-body">
+          click on a node to show restaurants
+          </div>
+        </div>
+      )
+    }
+    var selectedLocations = Store.getState().SELECTED_LOCATIONS;
     var colorMap = {};
-    Store.getState().SELECTED_LOCATIONS.forEach((location) => {
+    selectedLocations.forEach((location) => {
       colorMap[location.id] = location.color.hex;
     });
     var listItems = this.props.items.map((business) => {
