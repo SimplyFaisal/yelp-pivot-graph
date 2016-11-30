@@ -116,7 +116,6 @@ class PivotGraph extends React.Component {
         .attr("height", this.height + this.margin.top + this.margin.bottom)
         .append("g")
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-
         // Initializing tooltip anchor
         var tooltipAnchorSelection = svg.append("circle")
         tooltipAnchorSelection.attr({
@@ -136,6 +135,8 @@ class PivotGraph extends React.Component {
       svg.selectAll(".link")
         .data(G.links)
       .enter().append("path")
+        .style("stroke-width", d => edgeWeightScale(d.value))
+        .style('visibility', this.props.hideEdges ? 'hidden': 'visible')
         .attr("class", "link")
         .attr("d", function(d) {
           var sx = d.source.x, sy = d.source.y,
@@ -144,7 +145,6 @@ class PivotGraph extends React.Component {
               dr = 2 * Math.sqrt(dx * dx + dy * dy);
           return "M" + sx + "," + sy + "A" + dr + "," + dr + " 0 0,1 " + tx + "," + ty;
         })
-        .style("stroke-width", d => edgeWeightScale(d.value))
         .on('mouseover', function(d) {
           var coords = d3.mouse(this);
           tooltipAnchor.attr({
@@ -211,6 +211,13 @@ class PivotGraph extends React.Component {
           .attr("class", "y axis")
           .call(yAxis);
     });
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    if (nextProps.hideEdges != this.props.hideEdges) {
+      d3.selectAll('.link')
+        .style('visibility', nextProps.hideEdges ? 'hidden': 'visible');
+    }
   }
 }
 

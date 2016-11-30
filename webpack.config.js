@@ -15,7 +15,10 @@ const config = {
           presets: ['es2015', 'react'],
           plugins: ['transform-class-properties']
         }
-      }
+      },
+       {
+         test: /\.css$/, loader: "style-loader!css-loader"
+       }
     ]
   },
   devServer: {
@@ -23,13 +26,6 @@ const config = {
      '/api/**': {
        target: 'http://localhost:3000',
        secure: false
-    //    bypass: function(req, res, proxyOptions) {
-    //      console.log(req);
-    //       if (req.headers.accept.indexOf('html') !== -1) {
-    //         console.log('Skipping proxy for browser request.');
-    //         return '/index.html';
-    //       }
-    //     }
      }
    }
  }

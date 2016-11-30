@@ -2,6 +2,7 @@ const React = require('react');
 const Select = require('react-select');
 const Promise = require('bluebird');
 const axios = require('axios');
+const Spinner = require('react-spinkit');
 
 const state = require('./state');
 const constants = require('./constants');
@@ -17,7 +18,7 @@ class Panel extends React.Component {
     yAttribute: null,
     isLoadingLocations: true,
     locations: [],
-    isLoading: false
+    isLoading: false,
   }
 
   constructor(props) {
@@ -27,7 +28,6 @@ class Panel extends React.Component {
     this.onLocationChange = this.onLocationChange.bind(this);
     this.getLocations = this.getLocations.bind(this);
     this.onGraphButtonClick = this.onGraphButtonClick.bind(this);
-    this.geocoder = new google.maps.Geocoder;
 
     Store.subscribe(() => {
       var state = Store.getState();
@@ -77,7 +77,17 @@ class Panel extends React.Component {
               options={AttributeType.enumValues}
               onChange={this.onYChange}
           />
-          {this.state.isLoading ? 'Loading....' : ''}
+          {this.state.isLoading ?
+            <span className="text-center">
+              <Spinner spinnerName="three-bounce"/>
+            </span>
+               : ''}
+
+          <div className="checkbox">
+              <label>
+                <input type="checkbox" onChange={this.props.toggleEdges}/> Hide edges
+              </label>
+          </div>
           <a
             className="btn btn-danger btn-lg btn-block"
             onClick={this.onGraphButtonClick}>

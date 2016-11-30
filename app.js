@@ -4,7 +4,7 @@ const Modal = require('react-modal');
 const redux = require('redux');
 const axios = require('axios');
 const State = require('./state');
-const Bag = require('bag').Bag;
+
 
 const Store = State.Store;
 
@@ -321,7 +321,8 @@ class App extends React.Component {
 
   state = {
     isModalOpen: false,
-    selectedBusinesses: []
+    selectedBusinesses: [],
+    hideEdges: false,
   }
 
   constructor(props) {
@@ -350,7 +351,7 @@ class App extends React.Component {
                 </button>
               </div>
               <div className="panel-body">
-                <Panel/>
+                <Panel toggleEdges={this.toggleEdges}/>
               </div>
             </div>
           </div>
@@ -371,7 +372,9 @@ class App extends React.Component {
         </div>
         <div className="col-md-6">
           <div id="pivot-graph-container">
-            <PivotGraph onNodeClick={this.setSelectedBusinesses}/>
+            <PivotGraph
+              onNodeClick={this.setSelectedBusinesses}
+              hideEdges={this.state.hideEdges}/>
           </div>
         </div>
         <div className="col-md-2 col-md-offset-1">
@@ -391,6 +394,10 @@ class App extends React.Component {
 
   setSelectedBusinesses = (businesses) => {
     this.setState({selectedBusinesses: businesses});
+  }
+
+  toggleEdges = (event) => {
+    this.setState({hideEdges: event.target.checked});
   }
 }
 
