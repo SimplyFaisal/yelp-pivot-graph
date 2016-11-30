@@ -57,7 +57,7 @@ class PivotGraph extends React.Component {
 
       var xScale = xAttribute.scale()
         .domain(xAttribute.domain(G.nodes))
-        .range([this.margin.left, this.width])
+        .range([this.margin.left, this.width - this.margin.left])
 
       var yScale = yAttribute.scale()
         .domain(yAttribute.domain(G.nodes))
@@ -117,7 +117,7 @@ class PivotGraph extends React.Component {
       // Should attempt to transition instead.
       svg.selectAll("*").remove();
 
-      svg
+      var g = svg
         .attr("width", this.width + this.margin.left + this.margin.right)
         .attr("height", this.height + this.margin.top + this.margin.bottom)
         .append("g")
@@ -135,10 +135,11 @@ class PivotGraph extends React.Component {
           container: "body",
           placement: "auto",
           title: "text",
-          trigger: "manual"
+          trigger: "manual",
+          html: true,
         });
 
-      svg.selectAll(".link")
+      g.selectAll(".link")
         .data(G.links)
       .enter().append("path")
         .style("stroke-width", d => edgeWeightScale(d.value))
@@ -165,7 +166,7 @@ class PivotGraph extends React.Component {
         });
 
       var self = this;
-      svg.selectAll(".node")
+      g.selectAll(".node")
           .data(G.nodes)
         .enter().append("circle")
           .attr("class", "node")
@@ -200,7 +201,7 @@ class PivotGraph extends React.Component {
           .outerRadius(radiusScale(node.nodes.length) * 1.2);
 
         var pie = d3.pie().value(x => x.count)(node.pie);
-        var path = svg.selectAll('.arc')
+        var path = g.selectAll('.arc')
           .data(pie)
           .enter()
           .append('path')
@@ -209,11 +210,11 @@ class PivotGraph extends React.Component {
           .style('fill', d => colorMap[d.data.location_id]);
       });
 
-      svg.append("g")
+      g.append("g")
           .attr("class", "x axis")
           .call(xAxis);
 
-      svg.append("g")
+      g.append("g")
           .attr("class", "y axis")
           .call(yAxis);
     });
