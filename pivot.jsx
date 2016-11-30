@@ -111,7 +111,13 @@ class PivotGraph extends React.Component {
           .domain(d3.extent(G.links, x => x.value))
           .range([1, 10]);
 
-      var svg = d3.select('#pivot-graph')
+      var svg = d3.select('#pivot-graph');
+
+      // A bit of a hack. Wipe the svg before each rendering of the graph.
+      // Should attempt to transition instead.
+      svg.selectAll("*").remove();
+
+      svg
         .attr("width", this.width + this.margin.left + this.margin.right)
         .attr("height", this.height + this.margin.top + this.margin.bottom)
         .append("g")
