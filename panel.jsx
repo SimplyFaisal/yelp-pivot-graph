@@ -62,7 +62,7 @@ class Panel extends React.Component {
           /> */}
           {locationPanels}
 
-          <h5> x axis</h5>
+          <h5> y axis</h5>
           <Select
             name="x-axis"
             value={this.state.xAttribute}
@@ -70,7 +70,7 @@ class Panel extends React.Component {
             onChange={this.onXChange}
           />
 
-          <h5> y axis</h5>
+          <h5> x axis</h5>
           <Select
               name="y-axis"
               value={this.state.yAttribute}
