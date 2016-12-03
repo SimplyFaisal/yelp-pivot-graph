@@ -340,7 +340,7 @@ class App extends React.Component {
         </Modal>
         <div className="col-md-3">
           <div id="panel-container">
-            <div className="panel panel-default">
+            <div className="panel panel-danger">
               <div className="panel-heading">
                 <h3 className="panel-title">Yelp Pivot Graph</h3>
                 <button
@@ -356,7 +356,7 @@ class App extends React.Component {
             </div>
           </div>
 
-          <div className="panel panel-default">
+          <div className="panel panel-danger">
             <div className="panel-heading">
               <h3 className="panel-title">About</h3>
             </div>
