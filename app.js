@@ -4,7 +4,7 @@ const Modal = require('react-modal');
 const redux = require('redux');
 const axios = require('axios');
 const State = require('./state');
-const Bag = require('bag').Bag;
+
 
 const Store = State.Store;
 
@@ -192,16 +192,27 @@ tour.start();
     var div = document.createElement('div');
     var colors = this.colors;
 
+    var infoWindow = new google.maps.InfoWindow();
+
     function onInfoWindowButtonClick(value) {
       this.data.label = value;
       Store.dispatch(State.updateLocation(this.data));
     }
 
+    function onInfoWindowKeyPress(event) {
+      if (event.charCode == 13) {
+        this.close();
+      }
+    }
+
     ReactDom.render(<InfoWindowComponent
       onButtonClick={onInfoWindowButtonClick.bind(circle)}
+      onKeyPress={onInfoWindowKeyPress.bind(infoWindow)}
       defaultValue={circle.data.label}/>, div);
 
-    var infoWindow = new google.maps.InfoWindow({content: div});
+    infoWindow.setContent(div);
+
+
 
     circle.addListener('click', function(event) {
       infoWindow.setPosition(this.getCenter());
@@ -241,7 +252,8 @@ class InfoWindowComponent extends React.Component {
       <div>
         <input type="text"
           value={this.state.value}
-          onChange={this.onChange}/>
+          onChange={this.onChange}
+          onKeyPress={this.onKeyPress}/>
         <a
           className="btn btn-default btn-block btn-sm"
           onClick={this.onClick}
@@ -258,6 +270,11 @@ class InfoWindowComponent extends React.Component {
 
   onClick = (event) => {
     event.preventDefault();
+    this.props.onButtonClick(this.state.value);
+  }
+
+  onKeyPress = (event) => {
+    this.props.onKeyPress(event);
     this.props.onButtonClick(this.state.value);
   }
 }
@@ -304,7 +321,8 @@ class App extends React.Component {
 
   state = {
     isModalOpen: false,
-    selectedBusinesses: []
+    selectedBusinesses: [],
+    hideEdges: false,
   }
 
   constructor(props) {
@@ -333,7 +351,7 @@ class App extends React.Component {
                 </button>
               </div>
               <div className="panel-body">
-                <Panel/>
+                <Panel toggleEdges={this.toggleEdges}/>
               </div>
             </div>
           </div>
@@ -353,7 +371,9 @@ class App extends React.Component {
         </div>
         <div className="col-md-6">
           <div id="pivot-graph-container">
-            <PivotGraph onNodeClick={this.setSelectedBusinesses}/>
+            <PivotGraph
+              onNodeClick={this.setSelectedBusinesses}
+              hideEdges={this.state.hideEdges}/>
           </div>
         </div>
         <div className="col-md-2 col-md-offset-1">
@@ -374,6 +394,10 @@ class App extends React.Component {
   setSelectedBusinesses = (businesses) => {
     this.setState({selectedBusinesses: businesses});
   }
+
+  toggleEdges = (event) => {
+    this.setState({hideEdges: event.target.checked});
+  }
 }
 
 class ListView extends React.Component {
@@ -382,8 +406,18 @@ class ListView extends React.Component {
   }
 
   render = () => {
+    if (this.props.items.length == 0) {
+      return (
+        <div className="panel panel-default">
+          <div className="panel-body">
+          click on a node to show restaurants
+          </div>
+        </div>
+      )
+    }
+    var selectedLocations = Store.getState().SELECTED_LOCATIONS;
     var colorMap = {};
-    Store.getState().SELECTED_LOCATIONS.forEach((location) => {
+    selectedLocations.forEach((location) => {
       colorMap[location.id] = location.color.hex;
     });
     var listItems = this.props.items.map((business) => {

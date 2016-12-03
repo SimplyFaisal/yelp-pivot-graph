@@ -57,17 +57,17 @@ class PivotGraph extends React.Component {
 
       var xScale = xAttribute.scale()
         .domain(xAttribute.domain(G.nodes))
-        .range([this.margin.left, this.width])
+        .range([this.margin.left, this.width - this.margin.left])
 
       var yScale = yAttribute.scale()
         .domain(yAttribute.domain(G.nodes))
         .range([this.margin.top, this.height - this.margin.top]);
 
       var xAxis = d3.axisBottom()
-        .scale(xScale)
+        .scale(xScale);
 
       var yAxis = d3.axisLeft()
-        .scale(yScale)
+        .scale(yScale);
 
       var map = d3.map(d3.range(G.nodes.length), i => G.nodes[i].v);
       G.nodes.forEach((x) => {
@@ -110,13 +110,18 @@ class PivotGraph extends React.Component {
       var edgeWeightScale = d3.scaleLinear()
           .domain(d3.extent(G.links, x => x.value))
           .range([1, 10]);
+      var self = this;
+      var svg = d3.select('#pivot-graph');
 
-      var svg = d3.select('#pivot-graph')
+      // A bit of a hack. Wipe the svg before each rendering of the graph.
+      // Should attempt to transition instead.
+      svg.selectAll("*").remove();
+
+      var g = svg
         .attr("width", this.width + this.margin.left + this.margin.right)
         .attr("height", this.height + this.margin.top + this.margin.bottom)
         .append("g")
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-
         // Initializing tooltip anchor
         var tooltipAnchorSelection = svg.append("circle")
         tooltipAnchorSelection.attr({
@@ -130,12 +135,23 @@ class PivotGraph extends React.Component {
           container: "body",
           placement: "auto",
           title: "text",
-          trigger: "manual"
+          trigger: "manual",
+          html: true,
         });
 
-      svg.selectAll(".link")
+      g.append("g")
+          .attr("class", "x axis")
+          .call(xAxis);
+
+      g.append("g")
+          .attr("class", "y axis")
+          .call(yAxis);
+
+      g.selectAll(".link")
         .data(G.links)
       .enter().append("path")
+        .style("stroke-width", d => edgeWeightScale(d.value))
+        .style('visibility', this.props.hideEdges ? 'hidden': 'visible')
         .attr("class", "link")
         .attr("d", function(d) {
           var sx = d.source.x, sy = d.source.y,
@@ -144,12 +160,11 @@ class PivotGraph extends React.Component {
               dr = 2 * Math.sqrt(dx * dx + dy * dy);
           return "M" + sx + "," + sy + "A" + dr + "," + dr + " 0 0,1 " + tx + "," + ty;
         })
-        .style("stroke-width", d => edgeWeightScale(d.value))
         .on('mouseover', function(d) {
           var coords = d3.mouse(this);
           tooltipAnchor.attr({
-            cx: coords[0],
-            cy: coords[1],
+            cx: coords[0] + self.margin.left,
+            cy: coords[1] + self.margin.top,
             "data-original-title": 'Edge content goes here'
           });
           tooltipAnchor.tooltip("show");
@@ -158,8 +173,7 @@ class PivotGraph extends React.Component {
           tooltipAnchor.tooltip('hide');
         });
 
-      var self = this;
-      svg.selectAll(".node")
+      g.selectAll(".node")
           .data(G.nodes)
         .enter().append("circle")
           .attr("class", "node")
@@ -168,8 +182,8 @@ class PivotGraph extends React.Component {
           .attr("cy", (d) => d.y)
           .on('mouseover',function(d) {
             tooltipAnchor.attr({
-              cx: d.x,
-              cy: d.y,
+              cx: d.x + self.margin.left,
+              cy: d.y + self.margin.top,
               "data-original-title": 'Node content goes here'
             });
             tooltipAnchor.tooltip("show");
@@ -194,7 +208,7 @@ class PivotGraph extends React.Component {
           .outerRadius(radiusScale(node.nodes.length) * 1.2);
 
         var pie = d3.pie().value(x => x.count)(node.pie);
-        var path = svg.selectAll('.arc')
+        var path = g.selectAll('.arc')
           .data(pie)
           .enter()
           .append('path')
@@ -202,15 +216,14 @@ class PivotGraph extends React.Component {
           .attr('transform', d => `translate(${d.data.x}, ${d.data.y})`)
           .style('fill', d => colorMap[d.data.location_id]);
       });
-
-      svg.append("g")
-          .attr("class", "x axis")
-          .call(xAxis);
-
-      svg.append("g")
-          .attr("class", "y axis")
-          .call(yAxis);
     });
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    if (nextProps.hideEdges != this.props.hideEdges) {
+      d3.selectAll('.link')
+        .style('visibility', nextProps.hideEdges ? 'hidden': 'visible');
+    }
   }
 }
 
