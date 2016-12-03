@@ -25,33 +25,6 @@ AttributeType.initEnum({
       return d.value.stars;
     }
   },
-  CATEGORIES: {
-    label: 'Categories',
-    value: 'CATEGORIES',
-    type: DataType.ORDINAL,
-    domain: (data) => data,
-    scale: () => {
-      return d3.scalePoint();
-    },
-    f: (d) => {
-      return d;
-    }
-  },
-  REVIEW_COUNT: {
-    label: 'Review Count',
-    value: 'REVIEW_COUNT',
-    domain: (data) =>  {
-      data.sort(d3.ascending);
-      return d3.range(0, 100, 10)
-        .map(i => d3.quantile(data, i, x => x.value.review_count));
-    },
-    scale: () => {
-      return d3.scaleQuantile();
-    },
-    f: (d) => {
-      return d.value.review_count;
-    }
-  },
   ATTIRE: {
     label: 'Attire',
     value: 'ATTIRE',

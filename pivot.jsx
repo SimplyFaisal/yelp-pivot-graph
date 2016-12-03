@@ -105,7 +105,7 @@ class PivotGraph extends React.Component {
 
       var radiusScale = d3.scaleLinear()
           .domain(d3.extent(G.nodes, x => x.nodes.length))
-          .range([5, 20]);
+          .range([5, 15]);
 
       var edgeWeightScale = d3.scaleLinear()
           .domain(d3.extent(G.links, x => x.value))
@@ -165,7 +165,7 @@ class PivotGraph extends React.Component {
           tooltipAnchor.attr({
             cx: coords[0] + self.margin.left,
             cy: coords[1] + self.margin.top,
-            "data-original-title": `${d.links.length}`
+            "data-original-title": `${d.links.length} connections`
           });
           tooltipAnchor.tooltip("show");
         })
@@ -205,7 +205,7 @@ class PivotGraph extends React.Component {
       G.nodes.forEach((node) => {
         var arc = d3.arc()
           .innerRadius(radiusScale(node.nodes.length))
-          .outerRadius(radiusScale(node.nodes.length) * 1.2);
+          .outerRadius(radiusScale(node.nodes.length) * 1.5);
 
         var pie = d3.pie().value(x => x.count)(node.pie);
         var path = g.selectAll('.arc')

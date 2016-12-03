@@ -13,19 +13,19 @@ const PivotGraph = require('./pivot.jsx');
 const COLORS = [
   {
     class: 'danger',
-    hex: '#ff4136'
-  },
-  {
-    class: 'success',
-    hex: '#28b62c'
-  },
-  {
-    class: 'warning',
-    hex: '#ff851b'
+    hex: '#d32323'
   },
   {
     class: 'info',
-    hex: '#75caeb'
+    hex: '#f9bc74'
+  },
+  {
+    class: 'success',
+    hex: '#41a700'
+  },
+  {
+    class: 'warning',
+    hex: '#0097ec'
   }
 ];
 
@@ -361,7 +361,7 @@ class App extends React.Component {
               <h3 className="panel-title">About</h3>
             </div>
             <div className="panel-body">
-              Data is everywhere, including the restaurants we frequent every day. The Yelp pivot graph is our 
+              Data is everywhere, including the restaurants we frequent every day. The Yelp pivot graph is our
               attempt to understand as much of that data as possible and present it in a concise way.<br /><br />
               The graph aggregates restaurants in selected cities along variables that are predefined by the user, creating a simple scatterplot.
               You could see how many Italian restaurants have fancy attire, or see how many 5 star restaurants have
