@@ -140,7 +140,7 @@ class Map extends React.Component {
     content: stepFour
   }
 
-], orphan: true, backdrop: true
+], orphan: true, storage: false, backdrop: true
 });
 
 // Initialize the tour
