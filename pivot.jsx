@@ -165,7 +165,7 @@ class PivotGraph extends React.Component {
           tooltipAnchor.attr({
             cx: coords[0] + self.margin.left,
             cy: coords[1] + self.margin.top,
-            "data-original-title": 'Edge content goes here'
+            "data-original-title": `${d.links.length}`
           });
           tooltipAnchor.tooltip("show");
         })
@@ -184,7 +184,7 @@ class PivotGraph extends React.Component {
             tooltipAnchor.attr({
               cx: d.x + self.margin.left,
               cy: d.y + self.margin.top,
-              "data-original-title": 'Node content goes here'
+              "data-original-title": `${d.nodes.length} restaurants`
             });
             tooltipAnchor.tooltip("show");
           })
