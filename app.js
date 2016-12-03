@@ -92,7 +92,7 @@ class Map extends React.Component {
     });
 
     var stepOne = function() {
-      var wholeDiv = $($('<div class = "step1">This is a popover explanation<br></div>'));
+      var wholeDiv = $($('<div class = "step1">At the top of the map, ensure that you have the "Draw a circle" tool selected.<br></div>'));
       var pic = $($('<img id="dynamic">'));
       pic.attr('src', 'selectcircle.gif');
       wholeDiv.append(pic);
@@ -100,21 +100,21 @@ class Map extends React.Component {
     };
 
      var stepTwo = function() {
-      var wholeDiv = $($('<div class = "step1">This is a popover explanation for step 2<br></div>'));
+      var wholeDiv = $($('<div class = "step1">Determine your first location of interest and draw a circle around it. You can use the heat map to find out where bundles of restaurants are located.<br></div>'));
       var pic = $($('<img id="dynamic">'));
       pic.attr('src', 'drawcircle.gif');
       wholeDiv.append(pic);
       return wholeDiv;
     };
     var stepThree = function() {
-      var wholeDiv = $($('<div class = "step1">This is a popover explanation for step 3<br></div>'));
+      var wholeDiv = $($('<div class = "step1">Switch to the "hand grab" tool and click on the circle you just created to label it.<br></div>'));
       var pic = $($('<img id="dynamic">'));
       pic.attr('src', 'labelcircle.gif');
       wholeDiv.append(pic);
       return wholeDiv;
     };
     var stepFour = function() {
-      var wholeDiv = $($('<div class = "step1">This is a popover explanation for step 4<br></div>'));
+      var wholeDiv = $($('<div class = "step1">You can continue this process for up to four locations to compare in your graph.<br></div>'));
       var pic = $($('<img id="dynamic">'));
       pic.attr('src', 'addmore.gif');
       wholeDiv.append(pic);
@@ -140,7 +140,7 @@ class Map extends React.Component {
     content: stepFour
   }
 
-], orphan: true, storage: false, backdrop: true
+], orphan: true, backdrop: true
 });
 
 // Initialize the tour
