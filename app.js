@@ -343,12 +343,11 @@ class App extends React.Component {
               <h3 className="panel-title">About</h3>
             </div>
             <div className="panel-body">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-              sed do eiusmod tempor incididunt ut labore et dolore magna
-              aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-              ullamco laboris nisi ut aliquip ex ea commodo consequat.
-              Duis aute irure dolor in reprehenderit in voluptate velit
-              esse cillum dolore eu fugiat nulla pariatur.
+              Data is everywhere, including the restaurants we frequent every day. The Yelp pivot graph is our 
+              attempt to understand as much of that data as possible and present it in a concise way.<br /><br />
+              The graph aggregates restaurants in selected cities along variables that are predefined by the user, creating a simple scatterplot.
+              You could see how many Italian restaurants have fancy attire, or see how many 5 star restaurants have
+              a high number of reviews.<br /><br />
             </div>
           </div>
         </div>
