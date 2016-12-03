@@ -64,10 +64,10 @@ class PivotGraph extends React.Component {
         .range([this.margin.top, this.height - this.margin.top]);
 
       var xAxis = d3.axisBottom()
-        .scale(xScale)
+        .scale(xScale);
 
       var yAxis = d3.axisLeft()
-        .scale(yScale)
+        .scale(yScale);
 
       var map = d3.map(d3.range(G.nodes.length), i => G.nodes[i].v);
       G.nodes.forEach((x) => {
@@ -110,7 +110,7 @@ class PivotGraph extends React.Component {
       var edgeWeightScale = d3.scaleLinear()
           .domain(d3.extent(G.links, x => x.value))
           .range([1, 10]);
-
+      var self = this;
       var svg = d3.select('#pivot-graph');
 
       // A bit of a hack. Wipe the svg before each rendering of the graph.
@@ -139,6 +139,14 @@ class PivotGraph extends React.Component {
           html: true,
         });
 
+      g.append("g")
+          .attr("class", "x axis")
+          .call(xAxis);
+
+      g.append("g")
+          .attr("class", "y axis")
+          .call(yAxis);
+
       g.selectAll(".link")
         .data(G.links)
       .enter().append("path")
@@ -155,8 +163,8 @@ class PivotGraph extends React.Component {
         .on('mouseover', function(d) {
           var coords = d3.mouse(this);
           tooltipAnchor.attr({
-            cx: coords[0],
-            cy: coords[1],
+            cx: coords[0] + self.margin.left,
+            cy: coords[1] + self.margin.top,
             "data-original-title": 'Edge content goes here'
           });
           tooltipAnchor.tooltip("show");
@@ -165,7 +173,6 @@ class PivotGraph extends React.Component {
           tooltipAnchor.tooltip('hide');
         });
 
-      var self = this;
       g.selectAll(".node")
           .data(G.nodes)
         .enter().append("circle")
@@ -175,8 +182,8 @@ class PivotGraph extends React.Component {
           .attr("cy", (d) => d.y)
           .on('mouseover',function(d) {
             tooltipAnchor.attr({
-              cx: d.x,
-              cy: d.y,
+              cx: d.x + self.margin.left,
+              cy: d.y + self.margin.top,
               "data-original-title": 'Node content goes here'
             });
             tooltipAnchor.tooltip("show");
@@ -209,14 +216,6 @@ class PivotGraph extends React.Component {
           .attr('transform', d => `translate(${d.data.x}, ${d.data.y})`)
           .style('fill', d => colorMap[d.data.location_id]);
       });
-
-      g.append("g")
-          .attr("class", "x axis")
-          .call(xAxis);
-
-      g.append("g")
-          .attr("class", "y axis")
-          .call(yAxis);
     });
   }
 
