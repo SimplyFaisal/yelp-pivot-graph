@@ -12,7 +12,7 @@ const Panel = require('./panel.jsx');
 const PivotGraph = require('./pivot.jsx');
 const COLORS = [
   {
-    class: 'danger',
+    class: 'primary',
     hex: '#d32323'
   },
   {
@@ -255,7 +255,7 @@ class InfoWindowComponent extends React.Component {
           onChange={this.onChange}
           onKeyPress={this.onKeyPress}/>
         <a
-          className="btn btn-default btn-block btn-sm"
+          className="btn btn-primary btn-block btn-sm"
           onClick={this.onClick}
           >update label </a>
       </div>
@@ -340,9 +340,9 @@ class App extends React.Component {
         </Modal>
         <div className="col-md-3">
           <div id="panel-container">
-            <div className="panel panel-danger">
+            <div className="panel panel-default">
               <div className="panel-heading">
-                <h3 className="panel-title">Yelp Pivot</h3>
+                <h3 className="panel-title">Yelp Pivot Graph</h3>
                 <button
                   type="button"
                   className="btn btn-sm btn-default"
@@ -356,7 +356,7 @@ class App extends React.Component {
             </div>
           </div>
 
-          <div className="panel panel-danger">
+          <div className="panel panel-default">
             <div className="panel-heading">
               <h3 className="panel-title">About</h3>
             </div>

@@ -89,7 +89,7 @@ class Panel extends React.Component {
               </label>
           </div>
           <a
-            className="btn btn-danger btn-lg btn-block"
+            className="btn btn-default btn-lg btn-block"
             onClick={this.onGraphButtonClick}>
             Graph!
           </a>
