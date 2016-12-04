@@ -63,20 +63,21 @@ class Panel extends React.Component {
           /> */}
           {locationPanels}
 
-          <h5> x axis</h5>
-          <Select
-            name="x-axis"
-            value={this.state.xAttribute}
-            options={AttributeType.enumValues}
-            onChange={this.onXChange}
-          />
+          
 
-          <h5> y axis</h5>
+          <h5> X axis</h5>
           <Select
               name="y-axis"
               value={this.state.yAttribute}
               options={AttributeType.enumValues}
               onChange={this.onYChange}
+          />
+          <h5> Y axis</h5>
+          <Select
+            name="x-axis"
+            value={this.state.xAttribute}
+            options={AttributeType.enumValues}
+            onChange={this.onXChange}
           />
           {this.state.isLoading ?
             <span className="text-center">
