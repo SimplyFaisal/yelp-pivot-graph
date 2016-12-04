@@ -1,3 +1,4 @@
+// 100% of the code in this file was written by us. 0% was imported.
 const util = require('util');
 const credentials = require('./credentials.json');
 const uri = util.format('mongodb://%s:%s@ds139847.mlab.com:39847/yelp',

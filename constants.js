@@ -1,3 +1,5 @@
+// 100% of the code in this file was written by us. 0% was imported.
+
 const enumify = require('enumify');
 import * as d3 from "d3";
 

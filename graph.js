@@ -1,4 +1,5 @@
 'use strict';
+// 100% of the code in this file was written by us. 0% was imported.
 const graphlib = require('graphlib');
 const Promise = require('bluebird');
 

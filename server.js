@@ -1,3 +1,5 @@
+// 100% of the code in this file was written by us. 0% was imported.
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');

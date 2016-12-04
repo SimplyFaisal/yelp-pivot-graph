@@ -1,3 +1,4 @@
+// 0% of the code in this file was written by us. 100% was imported.
 import * as d3 from "d3";
 
 exports.rollup = function() {

@@ -1,3 +1,4 @@
+// 100% of the code in this file was written by us. 0% was imported.
 const React = require('react');
 import * as d3 from "d3";
 const Rollup = require('./rollup.js');

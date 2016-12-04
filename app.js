@@ -1,3 +1,5 @@
+// 100% of the code in this file was written by us. 0% was imported.
+
 const React = require('react');
 const ReactDom = require('react-dom');
 const Modal = require('react-modal');
@@ -140,7 +142,7 @@ class Map extends React.Component {
     content: stepFour
   }
 
-], orphan: true, storage: false, backdrop: true
+], orphan: true, backdrop: true
 });
 
 // Initialize the tour

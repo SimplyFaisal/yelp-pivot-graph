@@ -1,3 +1,4 @@
+// 100% of the code in this file was written by us. 0% was imported.
 const React = require('react');
 const Select = require('react-select');
 const Promise = require('bluebird');
